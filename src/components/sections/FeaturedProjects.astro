@@ -7,6 +7,7 @@
 
 const CARBON = '#171717';
 const LIME   = '#C6FF34';
+import ScrollFloat from '../ui/ScrollFloat';
 const SLATE  = '#707070';
 const BORDER = '#EAEAEA';
 const BG     = '#FAFAF7';
@@ -64,9 +65,25 @@ const projects = [
           </span>
           <div style="width:80px;height:1px;background:#EAEAEA;"></div>
         </div>
-        <h2 id="projects-heading" style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(36px,3vw,52px);font-weight:800;color:#171717;letter-spacing:-0.03em;line-height:1.1;margin:0;">
-          Products I've built<br>that people use.
-        </h2>
+        <div id="projects-heading" style="margin:0;">
+          <ScrollFloat
+            client:only="react"
+            as="h2"
+            animationDuration={1}
+            ease="back.inOut(2)"
+            stagger={0.05}
+            textStyle={{
+              fontFamily: "'Bricolage Grotesque', sans-serif",
+              fontSize: 'clamp(36px,3vw,52px)',
+              fontWeight: 800,
+              color: '#171717',
+              letterSpacing: '-0.03em',
+              lineHeight: 1.1,
+            }}
+          >
+            Products I've built that people use.
+          </ScrollFloat>
+        </div>
       </div>
       <a href="#" style="display:inline-flex;align-items:center;gap:6px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;color:#707070;text-decoration:none;flex-shrink:0;"
         onmouseover="this.style.color='#171717'" onmouseout="this.style.color='#707070'">

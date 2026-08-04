@@ -6,6 +6,7 @@
  */
 
 import CountUp from '../ui/CountUp';
+import ScrollFloat from '../ui/ScrollFloat';
 
 const stats = [
   { number: 10, suffix: '+', label: 'Project Selesai' },
@@ -55,9 +56,25 @@ const stats = [
         </div>
 
         <!-- Heading -->
-        <h2 id="about-heading" style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.75rem,3.5vw,2.5rem);font-weight:700;color:#171717;letter-spacing:-0.03em;line-height:1.1;margin:0;">
-          Saya membangun produk, bukan sekadar aplikasi.
-        </h2>
+        <div id="about-heading" style="margin:0;">
+          <ScrollFloat
+            client:only="react"
+            as="h2"
+            animationDuration={1}
+            ease="back.inOut(2)"
+            stagger={0.05}
+            textStyle={{
+              fontFamily: "'Bricolage Grotesque', sans-serif",
+              fontSize: 'clamp(1.75rem,3.5vw,2.5rem)',
+              fontWeight: 700,
+              color: '#171717',
+              letterSpacing: '-0.03em',
+              lineHeight: 1.1,
+            }}
+          >
+            Saya membangun produk, bukan sekadar aplikasi.
+          </ScrollFloat>
+        </div>
 
         <!-- Story -->
         <div style="display:flex;flex-direction:column;gap:1rem;font-family:'Inter',sans-serif;font-size:0.9375rem;color:#707070;line-height:1.7;">

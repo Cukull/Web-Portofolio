@@ -6,6 +6,7 @@
  */
 import { siteConfig } from '../../config/site';
 import OrbitAnimation from './OrbitAnimation';
+import ScrollFloat from '../ui/ScrollFloat';
 
 const contactInfo = [
   {
@@ -71,11 +72,27 @@ const contactInfo = [
         </div>
 
         <!-- Heading -->
-        <h2 id="contact-heading" style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(2rem,4vw,3.25rem);font-weight:800;color:#171717;letter-spacing:-0.03em;line-height:1.1;margin:0;">
-          Let's build<br/>
-          something<br/>
-          <span style="color:#C6FF34;">great</span> together.
-        </h2>
+        <div id="contact-heading" style="margin:0;">
+          <ScrollFloat
+            client:only="react"
+            as="h2"
+            animationDuration={1}
+            ease="back.inOut(2)"
+            stagger={0.05}
+            highlightWords={['great']}
+            highlightColor="#84CC16"
+            textStyle={{
+              fontFamily: "'Bricolage Grotesque', sans-serif",
+              fontSize: 'clamp(2rem,4vw,3.25rem)',
+              fontWeight: 800,
+              color: '#171717',
+              letterSpacing: '-0.03em',
+              lineHeight: 1.1,
+            }}
+          >
+            Let's build something great together.
+          </ScrollFloat>
+        </div>
 
         <p style="font-family:'Inter',sans-serif;font-size:15px;color:#707070;line-height:1.7;max-width:400px;margin:0;">
           Saya terbuka untuk proyek freelance, kolaborasi, atau posisi penuh-waktu.

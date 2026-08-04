@@ -6,6 +6,7 @@
  */
 
 const CARBON = '#171717';
+import ScrollFloat from '../ui/ScrollFloat';
 const LIME   = '#C6FF34';
 const SLATE  = '#707070';
 const BORDER = '#EAEAEA';
@@ -85,9 +86,25 @@ const education = [
     </div>
 
     <!-- Heading -->
-    <h2 id="experience-heading" style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(36px,3vw,52px);font-weight:800;color:#171717;letter-spacing:-0.03em;line-height:1.1;margin:0 0 64px;">
-      Where I've been.
-    </h2>
+    <div id="experience-heading" style="margin:0 0 64px;">
+      <ScrollFloat
+        client:only="react"
+        as="h2"
+        animationDuration={1}
+        ease="back.inOut(2)"
+        stagger={0.06}
+        textStyle={{
+          fontFamily: "'Bricolage Grotesque', sans-serif",
+          fontSize: 'clamp(36px,3vw,52px)',
+          fontWeight: 800,
+          color: '#171717',
+          letterSpacing: '-0.03em',
+          lineHeight: 1.1,
+        }}
+      >
+        Where I've been.
+      </ScrollFloat>
+    </div>
 
     <!-- Two-column grid -->
     <div class="exp-two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:3rem 5rem;">

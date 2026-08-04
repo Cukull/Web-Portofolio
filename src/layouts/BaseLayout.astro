@@ -89,6 +89,12 @@ const {
   </head>
 
   <body>
+    <!-- ─── INSTANT SSR BLACK OVERLAY (MENCEGAH FLASH KONTEN SAAT REFRESH) ─── -->
+    <div
+      id="instant-loader-bg"
+      style="position: fixed; top: -10px; left: -10px; right: -10px; bottom: -10px; width: calc(100vw + 20px); height: calc(100vh + 20px); z-index: 9999998; background-color: #0a0a0a; pointer-events: auto; margin: 0; padding: 0;"
+    ></div>
+
     <!-- ─── PAGE LOAD OVERLAY SLIDE-UP ──────────────────────────────────── -->
     <PageLoader client:only="react" />
 

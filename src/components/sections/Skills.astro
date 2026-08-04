@@ -3,6 +3,8 @@
  * Skills.astro — Fix: inline styles untuk card visual, is:global untuk hover.
  */
 
+import ScrollFloat from '../ui/ScrollFloat';
+
 const skillCategories = [
   {
     id: 'skill-frontend',
@@ -47,9 +49,23 @@ const skillCategories = [
       <p style="font-size:0.8125rem;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.75rem;font-family:'Inter',sans-serif;">
         02 — Skills
       </p>
-      <h2 id="skills-heading" style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(2rem,4vw,2.75rem);font-weight:700;color:#171717;margin-bottom:0.875rem;">
-        Technical Arsenal
-      </h2>
+      <div id="skills-heading" style="margin-bottom:0.875rem;">
+        <ScrollFloat
+          client:only="react"
+          as="h2"
+          animationDuration={1}
+          ease="back.inOut(2)"
+          stagger={0.06}
+          textStyle={{
+            fontFamily: "'Bricolage Grotesque', sans-serif",
+            fontSize: 'clamp(2rem,4vw,2.75rem)',
+            fontWeight: 700,
+            color: '#171717',
+          }}
+        >
+          Technical Arsenal
+        </ScrollFloat>
+      </div>
       <p style="font-family:'Inter',sans-serif;font-size:1rem;color:#707070;max-width:480px;margin:0 auto;line-height:1.65;">
         Kurated tools &amp; teknologi yang saya gunakan untuk membangun pengalaman digital premium.
       </p>

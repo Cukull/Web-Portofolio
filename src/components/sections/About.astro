@@ -6,6 +6,7 @@
  */
 
 import CountUp from '../ui/CountUp';
+import ReactionWidget from '../ui/ReactionWidget';
 
 // Masukkan path foto kamu di folder public, misal: '/images/profil.jpg'
 const profileImageUrl = '/images/profill.jpeg';
@@ -28,7 +29,7 @@ const stats = [
       <!-- Photo card -->
       <div style="position:relative;">
         <div
-          style="background:#FFFFFF;border:1px solid #EAEAEA;border-radius:28px;padding:12px;box-shadow:0 10px 40px -10px rgba(23,23,23,0.06);"
+          style="background:#FFFFFF;border:1px solid #EAEAEA;border-radius:28px;padding:12px;box-shadow:0 10px 40px -10px rgba(23,23,23,0.06);position:relative;"
         >
           {profileImageUrl ? (
             <img
@@ -46,6 +47,8 @@ const stats = [
               <p style="font-family:'Inter',sans-serif;font-size:12px;color:rgba(255,255,255,0.7);">Foto akan ditambahkan</p>
             </div>
           )}
+
+          <ReactionWidget client:visible imageId="about-profile" position="bottom-right" />
         </div>
         <!-- Accent circle -->
         <div

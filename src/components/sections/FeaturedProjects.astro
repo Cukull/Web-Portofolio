@@ -7,6 +7,7 @@
 
 const CARBON = '#171717';
 const LIME   = '#C6FF34';
+import ReactionWidget from '../ui/ReactionWidget';
 
 const SLATE  = '#707070';
 const BORDER = '#EAEAEA';
@@ -159,6 +160,8 @@ const projects = [
             )}
             <!-- Overlay gradient -->
             <div style={`position:absolute;inset:0;background:${project.imageLeft ? 'linear-gradient(to right,rgba(255,255,255,0.06),transparent)' : 'linear-gradient(to left,rgba(255,255,255,0.06),transparent)'};pointer-events:none;`}></div>
+            
+            <ReactionWidget client:visible imageId={project.id} position={project.imageLeft ? 'bottom-left' : 'bottom-right'} />
           </div>
 
         </article>

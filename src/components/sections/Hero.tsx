@@ -7,6 +7,7 @@
 import { useEffect, useState } from 'react';
 import FloatingIcons from './FloatingIcons';
 import CountUp from '../ui/CountUp';
+import ReactionWidget from '../ui/ReactionWidget';
 
 const LIME   = '#C6FF34';
 const CARBON = '#171717';
@@ -270,6 +271,8 @@ export default function Hero() {
                     }}
                   />
                 </div>
+
+                <ReactionWidget imageId="hero-profile" position="bottom-right" />
 
                 {/* "Available for work" badge */}
                 <div style={{

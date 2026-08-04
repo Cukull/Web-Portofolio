@@ -23,7 +23,61 @@ interface Spark {
   y: number;
   angle: number;
   startTime: number;
+  color: string;
 }
+
+/**
+ * Mendeteksi warna spark yang kontras berdasarkan elemen yang diklik.
+ * Jika yang diklik adalah tombol hijau (#C6FF34), spark otomatis berwarna hitam (#171717).
+ */
+const getContrastSparkColor = (target: HTMLElement | null, defaultColor: string): string => {
+  if (!target) return defaultColor;
+
+  // 1. Cek atribut kustom data-spark-color jika ada
+  const explicitElem = target.closest('[data-spark-color]');
+  if (explicitElem) {
+    const attr = explicitElem.getAttribute('data-spark-color');
+    if (attr) return attr;
+  }
+
+  // 2. Cek apakah elemen atau parent-nya adalah tombol hijau / background hijau terang
+  let curr: HTMLElement | null = target;
+  let depth = 0;
+  while (curr && curr !== document.body && depth < 5) {
+    const styleAttr = curr.getAttribute('style')?.toLowerCase() || '';
+    if (
+      curr.id === 'hero-view-work' ||
+      curr.classList.contains('bg-accent') ||
+      curr.classList.contains('bg-lime') ||
+      styleAttr.includes('#c6ff34') ||
+      styleAttr.includes('background: #c6ff34') ||
+      styleAttr.includes('background:#c6ff34') ||
+      styleAttr.includes('#b8f020')
+    ) {
+      return '#171717'; // Hitam (Carbon) agar tidak samar
+    }
+
+    try {
+      const computedBg = window.getComputedStyle(curr).backgroundColor;
+      // rgb(198, 255, 52) untuk #C6FF34, rgb(184, 240, 32) untuk hover lime
+      if (
+        computedBg === 'rgb(198, 255, 52)' ||
+        computedBg === 'rgb(184, 240, 32)' ||
+        computedBg === 'rgba(198, 255, 52, 1)' ||
+        computedBg === 'rgba(184, 240, 32, 1)'
+      ) {
+        return '#171717'; // Hitam (Carbon)
+      }
+    } catch {
+      // Abaikan jika getComputedStyle gagal
+    }
+
+    curr = curr.parentElement;
+    depth++;
+  }
+
+  return defaultColor;
+};
 
 const ClickSpark: React.FC<ClickSparkProps> = ({
   sparkColor = '#fff',
@@ -137,7 +191,7 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
         const x2 = spark.x + (distance + lineLength) * Math.cos(spark.angle);
         const y2 = spark.y + (distance + lineLength) * Math.sin(spark.angle);
 
-        ctx.strokeStyle = sparkColor;
+        ctx.strokeStyle = spark.color || sparkColor;
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(x1, y1);
@@ -167,31 +221,35 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
       const x = e.clientX;
       const y = e.clientY;
 
+      const activeColor = getContrastSparkColor(e.target as HTMLElement, sparkColor);
+
       const now = performance.now();
       const newSparks: Spark[] = Array.from({ length: sparkCount }, (_, i) => ({
         x,
         y,
         angle: (2 * Math.PI * i) / sparkCount,
         startTime: now,
+        color: activeColor,
       }));
 
       sparksRef.current.push(...newSparks);
     };
 
-    // Menggunakan capture: true agar mendeteksi semua klik bahkan jika ada stopPropagation
     window.addEventListener('click', handleGlobalClick, { capture: true });
     return () => {
       window.removeEventListener('click', handleGlobalClick, { capture: true });
     };
-  }, [global, sparkCount]);
+  }, [global, sparkCount, sparkColor]);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (global) return; // mode global sudah ditangani oleh window listener di atas
+    if (global) return; // mode global ditangani oleh window listener di atas
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+
+    const activeColor = getContrastSparkColor(e.target as HTMLElement, sparkColor);
 
     const now = performance.now();
     const newSparks: Spark[] = Array.from({ length: sparkCount }, (_, i) => ({
@@ -199,6 +257,7 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
       y,
       angle: (2 * Math.PI * i) / sparkCount,
       startTime: now,
+      color: activeColor,
     }));
 
     sparksRef.current.push(...newSparks);

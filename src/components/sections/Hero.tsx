@@ -154,6 +154,7 @@ export default function Hero() {
               }}>
                 <button
                   id="hero-view-work"
+                  data-spark-color="#171717"
                   onClick={() => scrollTo('projects')}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8,

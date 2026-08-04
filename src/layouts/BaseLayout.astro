@@ -100,7 +100,7 @@ const {
   </body>
 </html>
 
-<!-- ─── SCROLL REVEAL (IntersectionObserver) ─────────────────────── -->
+<!-- ─── SCROLL REVEAL (IntersectionObserver) & ANCHORS ─────────────────────── -->
 <script is:inline>
   // ── Reveal on scroll ──────────────────────────────────────────────
   (function () {
@@ -124,20 +124,26 @@ const {
     var target = e.target.closest('a[href^="#"]');
     if (!target) return;
     var id = target.getAttribute('href').slice(1);
-    if (!id) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    if (!id) { 
+      e.preventDefault(); 
+      if (window.lenis) { window.lenis.scrollTo(0); } else { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+      return; 
+    }
     var el = document.getElementById(id);
-    if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    if (el) { 
+      e.preventDefault(); 
+      if (window.lenis) {
+        window.lenis.scrollTo(el, { offset: -20 });
+      } else {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
+      }
+    }
   });
-
-  // ── Lenis smooth scroll (optional, only if available) ─────────────
-  if (typeof window !== 'undefined') {
-    import('/node_modules/lenis/dist/lenis.mjs').then(function(m) {
-      var Lenis = m.default || m.Lenis;
-      if (!Lenis) return;
-      var lenis = new Lenis({ duration: 1.1, easing: function(t){return 1-Math.pow(1-t,4);} });
-      window.lenis = lenis;
-      function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
-      requestAnimationFrame(raf);
-    }).catch(function(){/* lenis not available, use native smooth scroll */});
-  }
 </script>
+
+<!-- ─── LENIS SMOOTH SCROLL (Bundled by Vite) ─────────────────────── -->
+<script>
+  import { initLenis } from '../utils/lenis';
+  initLenis();
+</script>
+

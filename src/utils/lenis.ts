@@ -17,14 +17,17 @@ export function initLenis() {
   if (typeof window === 'undefined') return;
 
   // Dynamically import Lenis agar tidak masuk ke SSR bundle
-  import('lenis').then(({ default: Lenis }) => {
-    const lenis = new Lenis({
+  import('lenis').then((mod) => {
+    const LenisClass = (mod as any).default || (mod as any).Lenis || mod;
+    if (!LenisClass) return;
+
+    const lenis = new LenisClass({
       duration: 1.2,           // kecepatan scroll (semakin tinggi = semakin lambat/smooth)
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // eksponensial
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 1,
+      wheelMultiplier: 1.1,
       touchMultiplier: 2,
     });
 
@@ -36,6 +39,9 @@ export function initLenis() {
     requestAnimationFrame(raf);
 
     // Expose ke window untuk digunakan komponen lain jika perlu
-    (window as Window & { lenis?: typeof lenis }).lenis = lenis;
+    (window as Window & { lenis?: any }).lenis = lenis;
+  }).catch((err) => {
+    console.error('Gagal memuat Lenis smooth scroll:', err);
   });
 }
+

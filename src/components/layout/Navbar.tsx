@@ -49,7 +49,7 @@ export function Navbar() {
     setIsMobileOpen(false);
     const target = document.querySelector(href);
     if (target) {
-      const lenis = (window as Window & { lenis?: { scrollTo: (el: Element) => void } }).lenis;
+      const lenis = (window as unknown as Window & { lenis?: { scrollTo: (el: Element) => void } }).lenis;
       if (lenis) {
         lenis.scrollTo(target);
       } else {

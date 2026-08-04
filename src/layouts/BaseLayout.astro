@@ -11,6 +11,7 @@
  */
 import { siteConfig } from '../config/site';
 import '../styles/global.css';
+import ClickSpark from '../components/ui/ClickSpark';
 
 // Props yang bisa di-override per halaman
 interface Props {
@@ -97,6 +98,17 @@ const {
 
     <!-- Konten halaman -->
     <slot />
+
+    <!-- ─── GLOBAL FULL-SCREEN CLICK SPARK ──────────────────────────────── -->
+    <ClickSpark
+      client:only="react"
+      global={true}
+      sparkColor="#C6FF34"
+      sparkSize={12}
+      sparkRadius={28}
+      sparkCount={10}
+      duration={450}
+    />
   </body>
 </html>
 

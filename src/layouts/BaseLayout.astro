@@ -12,6 +12,7 @@
 import { siteConfig } from '../config/site';
 import '../styles/global.css';
 import ClickSpark from '../components/ui/ClickSpark';
+import PageLoader from '../components/ui/PageLoader';
 
 // Props yang bisa di-override per halaman
 interface Props {
@@ -88,6 +89,9 @@ const {
   </head>
 
   <body>
+    <!-- ─── PAGE LOAD OVERLAY SLIDE-UP ──────────────────────────────────── -->
+    <PageLoader client:only="react" />
+
     <!-- Skip to main content — accessibility -->
     <a
       href="#main"

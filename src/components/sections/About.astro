@@ -58,7 +58,7 @@ const stats = [
       </div>
 
       <!-- Content -->
-      <div style="display:flex;flex-direction:column;gap:2rem;">
+      <div class="about-content" style="display:flex;flex-direction:column;gap:2rem;">
 
         <!-- Section label -->
         <div style="display:flex;align-items:center;gap:12px;">
@@ -124,6 +124,9 @@ const stats = [
   @media (max-width: 768px) {
     .about-layout {
       grid-template-columns: 1fr !important;
+    }
+    .about-content {
+      order: -1;
     }
   }
 </style>

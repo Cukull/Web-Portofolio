@@ -8,7 +8,7 @@ interface ReactionWidgetProps {
   position?: 'bottom-right' | 'bottom-left';
 }
 
-const EMOJI_OPTIONS = ['❤️', '🔥', '👏', '🤩'];
+const EMOJI_OPTIONS = ['❤️', '🔥'];
 
 export default function ReactionWidget({ imageId, position = 'bottom-right' }: ReactionWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);

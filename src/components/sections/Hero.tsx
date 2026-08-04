@@ -87,7 +87,7 @@ export default function Hero() {
             gap: 'clamp(2rem, 5vw, 5rem)',
             width: '100%',
             paddingTop: '7rem',
-            paddingBottom: '5rem',
+            paddingBottom: '8rem', // Ditambah agar tidak menabrak teks SCROLL
             flexWrap: 'wrap',
           }}>
 
@@ -246,6 +246,8 @@ export default function Hero() {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
+              position: 'relative',
+              zIndex: 10, // Menghindari FloatingIcons menutupi foto
             }}>
               <div style={{ position: 'relative' }}>
 
@@ -273,27 +275,6 @@ export default function Hero() {
                 </div>
 
                 <ReactionWidget imageId="hero-profile" position="bottom-right" />
-
-                {/* "Available for work" badge */}
-                <div style={{
-                  position: 'absolute', bottom: -18, left: -20,
-                  background: '#fff', padding: '12px 18px',
-                  borderRadius: 18,
-                  boxShadow: '0 8px 28px rgba(0,0,0,0.10)',
-                  display: 'flex', alignItems: 'center', gap: 8,
-                  border: `1px solid ${BORDER}`,
-                  opacity: mounted ? 1 : 0,
-                  transform: mounted ? 'translateX(0)' : 'translateX(-12px)',
-                  transition: 'opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s',
-                }}>
-                  <PingDot />
-                  <span style={{
-                    fontFamily: "'Inter',sans-serif",
-                    fontWeight: 500, fontSize: 13, color: CARBON,
-                  }}>
-                    Available for work
-                  </span>
-                </div>
 
                 {/* Location badge */}
                 <div style={{

@@ -259,25 +259,16 @@ export default function Hero() {
                   transform: mounted ? 'translateY(0)' : 'translateY(24px)',
                   transition: 'opacity 0.8s ease, transform 0.8s ease',
                 }}>
-                  {/* Placeholder gradient — ganti dengan <img> saat foto tersedia */}
-                  <div style={{
-                    width: '100%', height: '100%',
-                    background: 'linear-gradient(160deg, #D4D0CE 0%, #B0B89A 40%, #8AAD00 100%)',
-                    display: 'flex', flexDirection: 'column',
-                    alignItems: 'center', justifyContent: 'flex-end',
-                    paddingBottom: 32,
-                  }}>
-                    <div style={{
-                      width: 72, height: 72, borderRadius: '50%',
-                      background: 'rgba(255,255,255,0.18)', marginBottom: 10,
-                    }}/>
-                    <p style={{
-                      fontFamily: "'Inter',sans-serif",
-                      fontSize: 12, color: 'rgba(255,255,255,0.7)',
-                    }}>
-                      Foto akan ditambahkan
-                    </p>
-                  </div>
+                  {/* Gambar Hero yang ditambahkan */}
+                  <img
+                    src="/images/hero.jpeg"
+                    alt="Foto Profil Mochamad Syukur"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover'
+                    }}
+                  />
                 </div>
 
                 {/* "Available for work" badge */}

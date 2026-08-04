@@ -1,5 +1,5 @@
 .scroll-float {
-  overflow: hidden;
+  overflow: visible;
   display: block;
 }
 
@@ -8,6 +8,7 @@
   line-height: 1.25;
 }
 
-.char {
+.sf-char {
   display: inline-block;
+  will-change: transform, opacity;
 }

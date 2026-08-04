@@ -1,10 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import './ScrollFloat.css';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export interface ScrollFloatProps {
   children: React.ReactNode;
@@ -21,19 +18,27 @@ export interface ScrollFloatProps {
   as?: 'h1' | 'h2' | 'h3' | 'h4' | 'div' | 'p';
   highlightWords?: string[];
   highlightColor?: string;
+  scrub?: boolean | number;
 }
+
+const extractText = (node: React.ReactNode): string => {
+  if (typeof node === 'string') return node;
+  if (typeof node === 'number') return String(node);
+  if (Array.isArray(node)) return node.map(extractText).join('');
+  if (React.isValidElement(node) && (node.props as any)?.children) {
+    return extractText((node.props as any).children);
+  }
+  return '';
+};
 
 const ScrollFloat: React.FC<ScrollFloatProps> = ({
   children,
-  scrollContainerRef,
   containerClassName = '',
   textClassName = '',
   containerStyle,
   textStyle,
-  animationDuration = 1,
-  ease = 'back.inOut(2)',
-  scrollStart = 'top bottom+=10%',
-  scrollEnd = 'bottom center',
+  animationDuration = 0.9,
+  ease = 'back.out(1.7)',
   stagger = 0.03,
   as: Tag = 'h2',
   highlightWords = [],
@@ -42,7 +47,11 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
   const containerRef = useRef<HTMLElement | null>(null);
 
   const splitText = useMemo(() => {
-    const text = typeof children === 'string' ? children : '';
+    const rawText = extractText(children);
+    // Replace multiple spaces/newlines with single space
+    const text = rawText.replace(/\s+/g, ' ').trim();
+    if (!text) return null;
+
     const highlightRanges: { start: number; end: number }[] = [];
     if (highlightWords && highlightWords.length > 0) {
       highlightWords.forEach((word) => {
@@ -59,13 +68,10 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
       );
       return (
         <span
-          className="char"
+          className="sf-char"
           key={index}
-          style={
-            isHighlighted
-              ? { color: highlightColor, display: 'inline-block' }
-              : undefined
-          }
+          data-highlighted={isHighlighted ? 'true' : undefined}
+          style={isHighlighted ? { color: highlightColor } : undefined}
         >
           {char === ' ' ? '\u00A0' : char}
         </span>
@@ -77,41 +83,57 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
     const el = containerRef.current;
     if (!el) return;
 
-    const scroller =
-      scrollContainerRef && scrollContainerRef.current
-        ? scrollContainerRef.current
-        : window;
+    const chars = Array.from(el.querySelectorAll<HTMLElement>('.sf-char'));
+    if (!chars.length) return;
 
-    const charElements = el.querySelectorAll('.char');
+    let animated = false;
 
-    gsap.fromTo(
-      charElements,
-      {
-        willChange: 'opacity, transform',
-        opacity: 0,
-        yPercent: 120,
-        scaleY: 2.3,
-        scaleX: 0.7,
-        transformOrigin: '50% 0%',
-      },
-      {
-        duration: animationDuration,
-        ease: ease,
-        opacity: 1,
-        yPercent: 0,
-        scaleY: 1,
-        scaleX: 1,
-        stagger: stagger,
-        scrollTrigger: {
-          trigger: el,
-          scroller,
-          start: scrollStart,
-          end: scrollEnd,
-          scrub: true,
+    const triggerAnimation = () => {
+      if (animated) return;
+      animated = true;
+
+      gsap.fromTo(
+        chars,
+        {
+          opacity: 0,
+          y: 35,
+          scaleY: 1.3,
+          scaleX: 0.95,
+          transformOrigin: '50% 100%',
         },
-      }
+        {
+          opacity: 1,
+          y: 0,
+          scaleY: 1,
+          scaleX: 1,
+          duration: animationDuration,
+          ease: ease,
+          stagger: stagger,
+          onComplete: () => {
+            gsap.set(chars, { clearProps: 'willChange' });
+          },
+        }
+      );
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            triggerAnimation();
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.05 }
     );
-  }, [scrollContainerRef, animationDuration, ease, scrollStart, scrollEnd, stagger]);
+
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [children, animationDuration, ease, stagger]);
 
   return (
     <Tag

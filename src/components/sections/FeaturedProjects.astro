@@ -7,22 +7,23 @@
 
 const CARBON = '#171717';
 const LIME   = '#C6FF34';
-import ScrollFloat from '../ui/ScrollFloat';
+
 const SLATE  = '#707070';
 const BORDER = '#EAEAEA';
 const BG     = '#FAFAF7';
 
 const projects = [
   {
-    id: 'project-ecommerce',
-    name: 'E-Commerce Platform',
-    tagline: 'Toko online modern, pengalaman belanja tanpa hambatan.',
-    description: 'Platform toko online full-stack dengan sistem manajemen produk, keranjang belanja real-time, dan integrasi payment gateway. Dibangun dari nol hingga production dalam 8 minggu dengan fokus pada performa dan UX.',
-    tags: ['Next.js', 'TypeScript', 'PostgreSQL', 'Midtrans', 'Prisma'],
+    id: 'project-web-filmku',
+    name: 'Web Filmku',
+    tagline: 'Filmku adalah sebuah website untuk membeli tiket bioskop online.',
+    description: 'Filmku adalah sebuah website untuk membeli tiket bioskop online. Dibangun dari nol hingga production dalam 2 minggu dengan fokus pada performa dan UX.',
+    tags: ['Next.js', 'React', 'SCSS', 'Bootstrap'],
     role: 'Full-Stack Developer',
     year: '2024',
+    imageUrl: '/images/filmku.png', // <-- Masukkan path gambar di folder public, misal: '/images/project1.png'
     bgGradient: 'linear-gradient(135deg, #E5E2E1 0%, #C3C9AE 60%, #A3D800 100%)',
-    imageAlt: 'E-Commerce Platform dashboard',
+    imageAlt: 'Web Filmku',
     imageLeft: false,
   },
   {
@@ -33,6 +34,7 @@ const projects = [
     tags: ['React', 'Node.js', 'MySQL', 'Recharts', 'REST API'],
     role: 'Lead Engineer & Designer',
     year: '2023',
+    imageUrl: '', // <-- Masukkan path gambar di folder public, misal: '/images/project2.png'
     bgGradient: 'linear-gradient(135deg, #C3C9AE 0%, #747A62 40%, #4C6700 100%)',
     imageAlt: 'Analytics Dashboard mockup',
     imageLeft: true,
@@ -45,6 +47,7 @@ const projects = [
     tags: ['React', 'Tailwind CSS', 'Storybook', 'TypeScript', 'Figma'],
     role: 'Design Engineer',
     year: '2022',
+    imageUrl: '', // <-- Masukkan path gambar di folder public, misal: '/images/project3.png'
     bgGradient: 'linear-gradient(135deg, #FAFAF7 0%, #EAEAEA 50%, #C6FF34 100%)',
     imageAlt: 'UI Component Library showcase',
     imageLeft: false,
@@ -66,23 +69,9 @@ const projects = [
           <div style="width:80px;height:1px;background:#EAEAEA;"></div>
         </div>
         <div id="projects-heading" style="margin:0;">
-          <ScrollFloat
-            client:only="react"
-            as="h2"
-            animationDuration={1}
-            ease="back.inOut(2)"
-            stagger={0.05}
-            textStyle={{
-              fontFamily: "'Bricolage Grotesque', sans-serif",
-              fontSize: 'clamp(36px,3vw,52px)',
-              fontWeight: 800,
-              color: '#171717',
-              letterSpacing: '-0.03em',
-              lineHeight: 1.1,
-            }}
-          >
+          <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(36px,3vw,52px);font-weight:800;color:#171717;letter-spacing:-0.03em;line-height:1.1;margin:0;">
             Products I've built that people use.
-          </ScrollFloat>
+          </h2>
         </div>
       </div>
       <a href="#" style="display:inline-flex;align-items:center;gap:6px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;color:#707070;text-decoration:none;flex-shrink:0;"
@@ -153,12 +142,21 @@ const projects = [
 
           <!-- Image side (58%) -->
           <div class="proj-img-side" style="flex:1;overflow:hidden;position:relative;">
-            <div
-              class="proj-img-el"
-              role="img"
-              aria-label={project.imageAlt}
-              style={`width:100%;height:100%;background:${project.bgGradient};transition:transform 0.5s ease;`}
-            ></div>
+            {project.imageUrl ? (
+              <img
+                src={project.imageUrl}
+                alt={project.imageAlt}
+                class="proj-img-el"
+                style="width:100%;height:100%;object-fit:cover;transition:transform 0.5s ease;display:block;"
+              />
+            ) : (
+              <div
+                class="proj-img-el"
+                role="img"
+                aria-label={project.imageAlt}
+                style={`width:100%;height:100%;background:${project.bgGradient};transition:transform 0.5s ease;`}
+              />
+            )}
             <!-- Overlay gradient -->
             <div style={`position:absolute;inset:0;background:${project.imageLeft ? 'linear-gradient(to right,rgba(255,255,255,0.06),transparent)' : 'linear-gradient(to left,rgba(255,255,255,0.06),transparent)'};pointer-events:none;`}></div>
           </div>

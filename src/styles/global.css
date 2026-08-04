@@ -1,0 +1,282 @@
+/**
+ * Global CSS
+ * - Import Tailwind CSS v4
+ * - Google Fonts (Bricolage Grotesque + Inter)
+ * - CSS Custom Properties untuk smooth scroll & base styles
+ * - prefers-reduced-motion support
+ */
+
+/* ─── GOOGLE FONTS ──────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800;12..96,900&family=Inter:wght@400;500;600&display=swap');
+
+/* ─── TAILWIND ──────────────────────────────────────────────────────────── */
+@import "tailwindcss";
+
+/* ─── TAILWIND v4 DESIGN TOKENS (@theme) ────────────────────────────────── */
+/* Di Tailwind v4, tema didefinisikan di sini, bukan di tailwind.config.ts   */
+@theme {
+  /* ── Warna Background ─────────────────────────────────────── */
+  --color-bg-primary:   #FAFAF7;  /* Warm White — halaman utama    */
+  --color-bg-secondary: #F5F5F0;  /* Soft Cream — section bergantian */
+  --color-bg-surface:   #FFFFFF;  /* Pure White — card, modal      */
+
+  /* ── Warna Teks ───────────────────────────────────────────── */
+  --color-text-primary:   #171717; /* Carbon — kontras tinggi       */
+  --color-text-secondary: #707070; /* Slate Gray — sekunder         */
+
+  /* ── Border ───────────────────────────────────────────────── */
+  --color-border: #EAEAEA;         /* Soft Gray — border halus      */
+
+  /* ── Accent Lime ──────────────────────────────────────────── */
+  --color-accent:       #C6FF34;  /* Lime — CTA utama              */
+  --color-accent-hover: #B7F12C;  /* Fresh Green — hover           */
+
+  /* ── Status ───────────────────────────────────────────────── */
+  --color-success: #56C271;
+  --color-warning: #FFCC66;
+  --color-error:   #F15B5B;
+
+  /* ── Font Family ──────────────────────────────────────────── */
+  --font-family-heading: "Bricolage Grotesque", sans-serif;
+  --font-family-body:    "Inter", sans-serif;
+
+  /* ── Border Radius ────────────────────────────────────────── */
+  --radius-button: 16px;
+  --radius-card:   24px;
+  --radius-hero:   32px;
+  --radius-image:  28px;
+  --radius-sm:     12px;
+  --radius-md:     20px;
+  --radius-lg:     28px;
+  --radius-xl:     36px;
+
+  /* ── Shadow ───────────────────────────────────────────────── */
+  --shadow-card:         0 4px 24px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover:   0 8px 40px rgba(0, 0, 0, 0.10);
+  --shadow-button:       0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-button-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-navbar:       0 1px 0 rgba(0, 0, 0, 0.06);
+
+  /* ── Spacing ──────────────────────────────────────────────── */
+  --spacing-section:   9rem;   /* 144px — section standar       */
+  --spacing-card-pad:  2rem;   /* 32px  — card padding          */
+}
+
+/* ─── CSS CUSTOM PROPERTIES ─────────────────────────────────────────────── */
+:root {
+  /* Scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: #EAEAEA #FAFAF7;
+
+  /* Selection */
+  --selection-bg: #C6FF34;
+  --selection-text: #171717;
+}
+
+/* ─── BASE STYLES ────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* Smooth scroll dihandle oleh Lenis, bukan native CSS */
+  scroll-behavior: auto;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #FAFAF7; /* Warm White */
+  color: #171717;            /* Carbon */
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ─── SELECTION ──────────────────────────────────────────────────────────── */
+::selection {
+  background-color: var(--selection-bg);
+  color: var(--selection-text);
+}
+
+/* ─── FOCUS VISIBLE ─────────────────────────────────────────────────────── */
+/* Keyboard navigation focus — accessible */
+:focus-visible {
+  outline: 2px solid #C6FF34;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ─── SCROLLBAR ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FAFAF7;
+}
+::-webkit-scrollbar-thumb {
+  background: #EAEAEA;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D0D0D0;
+}
+
+/* ─── REDUCED MOTION ─────────────────────────────────────────────────────── */
+/* Semua animasi di-disable untuk user yang prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── UTILITY CLASSES ────────────────────────────────────────────────────── */
+
+/* Visually hidden (untuk screen reader) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Container — content width 1200px, max 1440px */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+/* Section spacing */
+.section {
+  padding-top: 9rem;   /* 144px */
+  padding-bottom: 9rem;
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+}
+
+/* Gradient text — untuk highlight heading */
+.text-gradient {
+  background: linear-gradient(135deg, #C6FF34, #B7F12C);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Heading font override */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  color: #171717;
+  line-height: 1.1;
+}
+
+/* ─── FLOATING ICON ANIMATION ────────────────────────────────────────────── */
+.floating-icon {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%   { transform: translateY(0px) rotate(0deg); }
+  50%  { transform: translateY(-15px) rotate(2deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+/* ─── HOVER LIFT ─────────────────────────────────────────────────────────── */
+/* Kartu naik sedikit saat hover — efek fisik */
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px -10px rgba(23, 23, 23, 0.08);
+}
+
+/* ─── ACCENT TAG / PILL ───────────────────────────────────────────────────── */
+.accent-tag {
+  background-color: rgba(198, 255, 52, 0.20);
+  border: 1px solid rgba(198, 255, 52, 0.45);
+  color: #2D3A00;
+  padding: 0.3rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  display: inline-block;
+  transition: background-color 0.15s ease;
+}
+
+.accent-tag:hover {
+  background-color: rgba(198, 255, 52, 0.35);
+}
+
+/* ─── REVEAL ON SCROLL (IntersectionObserver) ────────────────────────────── */
+/* JS di BaseLayout.astro menambah class .revealed saat elemen masuk viewport */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-on-scroll.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Fallback: jika JS tidak jalan, tampilkan semua elemen */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-on-scroll,
+  .reveal-on-scroll.revealed {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ─── IMAGE UTILS ────────────────────────────────────────────────────────── */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}

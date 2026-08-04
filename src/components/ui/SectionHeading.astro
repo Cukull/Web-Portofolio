@@ -1,0 +1,46 @@
+---
+/**
+ * SectionHeading.astro
+ * Heading standar untuk semua section.
+ * Font: Bricolage Grotesque (via global.css)
+ * Styling: heading besar, body kecil, hierarchy jelas (dari Creative Direction)
+ */
+interface Props {
+  label?: string;    // Label kecil di atas heading (optional) — e.g. "01 — About"
+  title: string;     // Heading utama
+  subtitle?: string; // Teks deskripsi di bawah heading (optional)
+  align?: 'left' | 'center';
+  class?: string;
+}
+
+const {
+  label,
+  title,
+  subtitle,
+  align = 'left',
+  class: className = '',
+} = Astro.props;
+
+const alignClass = align === 'center' ? 'text-center items-center' : 'text-left items-start';
+---
+
+<div class={`flex flex-col gap-3 ${alignClass} ${className}`}>
+  {/* Label kecil — e.g. "01 — Projects" */}
+  {label && (
+    <span class="text-sm font-medium text-text-secondary uppercase tracking-widest font-body">
+      {label}
+    </span>
+  )}
+
+  {/* Heading utama — Bricolage Grotesque, besar */}
+  <h2 class="text-display-sm md:text-display-md font-heading font-bold text-text-primary leading-tight">
+    {title}
+  </h2>
+
+  {/* Subtitle / deskripsi */}
+  {subtitle && (
+    <p class="text-base md:text-lg text-text-secondary font-body max-w-xl leading-relaxed">
+      {subtitle}
+    </p>
+  )}
+</div>

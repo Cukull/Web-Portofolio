@@ -1,0 +1,30 @@
+---
+/**
+ * index.astro — Halaman Utama
+ * Urutan section: Hero → About → Skills → Projects → Experience → Contact → Footer
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Navbar } from '../components/layout/Navbar';
+import Footer from '../components/layout/Footer.astro';
+import Hero from '../components/sections/Hero';
+import About from '../components/sections/About.astro';
+import Skills from '../components/sections/Skills.astro';
+import FeaturedProjects from '../components/sections/FeaturedProjects.astro';
+import Experience from '../components/sections/Experience.astro';
+import Contact from '../components/sections/Contact.astro';
+---
+
+<BaseLayout>
+  <Navbar client:load />
+
+  <main id="main" tabindex="-1">
+    <Hero client:load />
+    <About />
+    <Skills />
+    <FeaturedProjects />
+    <Experience />
+    <Contact />
+  </main>
+
+  <Footer />
+</BaseLayout>

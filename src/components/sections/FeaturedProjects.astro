@@ -1,0 +1,173 @@
+---
+/**
+ * FeaturedProjects.astro
+ * Design dari referensi: kartu besar putih, text 42% kiri, image 58% kanan.
+ * Alternating imageLeft untuk project genap.
+ */
+
+const CARBON = '#171717';
+const LIME   = '#C6FF34';
+const SLATE  = '#707070';
+const BORDER = '#EAEAEA';
+const BG     = '#FAFAF7';
+
+const projects = [
+  {
+    id: 'project-ecommerce',
+    name: 'E-Commerce Platform',
+    tagline: 'Toko online modern, pengalaman belanja tanpa hambatan.',
+    description: 'Platform toko online full-stack dengan sistem manajemen produk, keranjang belanja real-time, dan integrasi payment gateway. Dibangun dari nol hingga production dalam 8 minggu dengan fokus pada performa dan UX.',
+    tags: ['Next.js', 'TypeScript', 'PostgreSQL', 'Midtrans', 'Prisma'],
+    role: 'Full-Stack Developer',
+    year: '2024',
+    bgGradient: 'linear-gradient(135deg, #E5E2E1 0%, #C3C9AE 60%, #A3D800 100%)',
+    imageAlt: 'E-Commerce Platform dashboard',
+    imageLeft: false,
+  },
+  {
+    id: 'project-dashboard',
+    name: 'Analytics Dashboard',
+    tagline: 'Data real-time yang mudah dibaca dan diinterpretasikan.',
+    description: 'Dashboard analytics untuk visualisasi data bisnis dengan grafik interaktif, filter dinamis, dan laporan otomatis. Membantu tim mengambil keputusan lebih cepat berdasarkan data akurat.',
+    tags: ['React', 'Node.js', 'MySQL', 'Recharts', 'REST API'],
+    role: 'Lead Engineer & Designer',
+    year: '2023',
+    bgGradient: 'linear-gradient(135deg, #C3C9AE 0%, #747A62 40%, #4C6700 100%)',
+    imageAlt: 'Analytics Dashboard mockup',
+    imageLeft: true,
+  },
+  {
+    id: 'project-uikit',
+    name: 'UI Component Library',
+    tagline: 'Design system komprehensif untuk konsistensi produk.',
+    description: 'Sistem desain dengan 50+ komponen responsif berbasis Tailwind CSS dan React. Mendukung dark mode, aksesibilitas WCAG 2.1, dan dokumentasi Storybook yang lengkap untuk penggunaan tim.',
+    tags: ['React', 'Tailwind CSS', 'Storybook', 'TypeScript', 'Figma'],
+    role: 'Design Engineer',
+    year: '2022',
+    bgGradient: 'linear-gradient(135deg, #FAFAF7 0%, #EAEAEA 50%, #C6FF34 100%)',
+    imageAlt: 'UI Component Library showcase',
+    imageLeft: false,
+  },
+];
+---
+
+<section id="projects" aria-labelledby="projects-heading" style="background:#FAFAF7;padding:120px 0;">
+  <div style="max-width:1440px;margin:0 auto;padding:0 clamp(1.25rem,4vw,4rem);">
+
+    <!-- Header row -->
+    <div class="proj-header-row reveal-on-scroll" style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:64px;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <!-- Label + line -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#707070;letter-spacing:0.1em;text-transform:uppercase;">
+            Selected work
+          </span>
+          <div style="width:80px;height:1px;background:#EAEAEA;"></div>
+        </div>
+        <h2 id="projects-heading" style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(36px,3vw,52px);font-weight:800;color:#171717;letter-spacing:-0.03em;line-height:1.1;margin:0;">
+          Products I've built<br>that people use.
+        </h2>
+      </div>
+      <a href="#" style="display:inline-flex;align-items:center;gap:6px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;color:#707070;text-decoration:none;flex-shrink:0;"
+        onmouseover="this.style.color='#171717'" onmouseout="this.style.color='#707070'">
+        All projects
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+      </a>
+    </div>
+
+    <!-- Project cards -->
+    <div style="display:flex;flex-direction:column;gap:2rem;">
+      {projects.map((project) => (
+        <article
+          id={project.id}
+          class="proj-card reveal-on-scroll"
+          style={`background:#FFFFFF;border-radius:24px;overflow:hidden;border:1px solid #EAEAEA;display:flex;flex-direction:${project.imageLeft ? 'row-reverse' : 'row'};min-height:440px;`}
+          aria-label={project.name}
+        >
+          <!-- Text side (42%) -->
+          <div class="proj-text-side" style="flex:0 0 42%;padding:clamp(2rem,4vw,52px) clamp(1.5rem,3.5vw,48px);display:flex;flex-direction:column;justify-content:center;">
+
+            <!-- Meta -->
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px;">
+              <span style="font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#707070;">
+                {project.year}
+              </span>
+              <span style="width:4px;height:4px;border-radius:50%;background:#EAEAEA;display:inline-block;"></span>
+              <span style="font-family:'Inter',sans-serif;font-size:11.5px;font-weight:500;color:#707070;letter-spacing:0.04em;">
+                {project.role}
+              </span>
+            </div>
+
+            <!-- Name -->
+            <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(28px,2.5vw,40px);font-weight:800;color:#171717;letter-spacing:-0.03em;line-height:1.1;margin:0 0 8px;">
+              {project.name}
+            </h3>
+
+            <!-- Tagline -->
+            <p style="font-family:'Inter',sans-serif;font-size:15px;font-weight:600;color:#707070;margin:0 0 18px;font-style:italic;">
+              {project.tagline}
+            </p>
+
+            <!-- Description -->
+            <p style="font-family:'Inter',sans-serif;font-size:15px;line-height:1.75;color:#707070;margin:0 0 28px;">
+              {project.description}
+            </p>
+
+            <!-- Tags -->
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:40px;">
+              {project.tags.map(tag => (
+                <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:#171717;background:#FAFAF7;border:1px solid #EAEAEA;padding:4px 12px;border-radius:100px;">
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            <!-- CTA link -->
+            <a
+              href="#"
+              class="proj-cta-link"
+              style="display:inline-flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;color:#171717;text-decoration:none;border-bottom:2px solid #C6FF34;padding-bottom:3px;width:fit-content;transition:gap 0.15s ease;"
+              onmouseover="this.style.gap='14px'" onmouseout="this.style.gap='8px'"
+            >
+              View Case Study
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+            </a>
+          </div>
+
+          <!-- Image side (58%) -->
+          <div class="proj-img-side" style="flex:1;overflow:hidden;position:relative;">
+            <div
+              class="proj-img-el"
+              role="img"
+              aria-label={project.imageAlt}
+              style={`width:100%;height:100%;background:${project.bgGradient};transition:transform 0.5s ease;`}
+            ></div>
+            <!-- Overlay gradient -->
+            <div style={`position:absolute;inset:0;background:${project.imageLeft ? 'linear-gradient(to right,rgba(255,255,255,0.06),transparent)' : 'linear-gradient(to left,rgba(255,255,255,0.06),transparent)'};pointer-events:none;`}></div>
+          </div>
+
+        </article>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<style is:global>
+  @media (max-width: 767px) {
+    .proj-card {
+      flex-direction: column !important;
+      min-height: auto !important;
+    }
+    .proj-text-side {
+      flex: none !important;
+    }
+    .proj-img-side {
+      height: 260px !important;
+    }
+  }
+
+  .proj-card:hover .proj-img-el {
+    transform: scale(1.04) !important;
+  }
+</style>

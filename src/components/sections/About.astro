@@ -1,0 +1,103 @@
+---
+/**
+ * About.astro — editorial layout.
+ * Foto besar kiri, cerita + stats kanan.
+ * Tidak bergantung pada komponen eksternal.
+ */
+
+const stats = [
+  { value: '10+', label: 'Project Selesai' },
+  { value: '2+',  label: 'Tahun Pengalaman' },
+  { value: '5+',  label: 'Tech Stack' },
+];
+---
+
+<section
+  id="about"
+  aria-labelledby="about-heading"
+  style="background:#FAFAF7;padding:120px 0;"
+>
+  <div style="max-width:1440px;margin:0 auto;padding:0 clamp(1.25rem,4vw,4rem);">
+    <div class="about-layout reveal-on-scroll" style="display:grid;grid-template-columns:5fr 7fr;gap:clamp(2rem,5vw,5rem);align-items:start;">
+
+      <!-- Photo card -->
+      <div style="position:relative;">
+        <div
+          style="background:#FFFFFF;border:1px solid #EAEAEA;border-radius:28px;padding:12px;box-shadow:0 10px 40px -10px rgba(23,23,23,0.06);"
+        >
+          <div
+            role="img"
+            aria-label="Foto workspace Mochamad Syukur"
+            style="aspect-ratio:4/5;width:100%;border-radius:20px;overflow:hidden;background:linear-gradient(160deg,#E5E2E1 0%,#C3C9AE 50%,#A3D800 100%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:2rem;"
+          >
+            <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.2);margin-bottom:10px;"></div>
+            <p style="font-family:'Inter',sans-serif;font-size:12px;color:rgba(255,255,255,0.7);">Foto akan ditambahkan</p>
+          </div>
+        </div>
+        <!-- Accent circle -->
+        <div
+          aria-hidden="true"
+          style="position:absolute;bottom:-12px;right:-12px;width:80px;height:80px;border-radius:50%;border:4px solid #C6FF34;opacity:0.3;"
+        ></div>
+      </div>
+
+      <!-- Content -->
+      <div style="display:flex;flex-direction:column;gap:2rem;">
+
+        <!-- Section label -->
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#707070;letter-spacing:0.1em;text-transform:uppercase;">
+            01 — About
+          </span>
+          <div style="width:60px;height:1px;background:#EAEAEA;"></div>
+        </div>
+
+        <!-- Heading -->
+        <h2 id="about-heading" style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.75rem,3.5vw,2.5rem);font-weight:700;color:#171717;letter-spacing:-0.03em;line-height:1.1;margin:0;">
+          Saya membangun produk, bukan sekadar aplikasi.
+        </h2>
+
+        <!-- Story -->
+        <div style="display:flex;flex-direction:column;gap:1rem;font-family:'Inter',sans-serif;font-size:0.9375rem;color:#707070;line-height:1.7;">
+          <p>
+            Saya adalah seorang <strong style="color:#171717;font-weight:600;">Web Developer</strong> yang percaya bahwa kode yang baik adalah kode yang bisa dibaca, dipahami, dan dikembangkan — bukan hanya yang berjalan dengan benar.
+          </p>
+          <p>
+            Saya memulai perjalanan di dunia development karena rasa ingin tahu yang besar terhadap bagaimana sebuah produk digital dibuat dari nol hingga bisa digunakan banyak orang. Proses itu — dari desain hingga deployment — yang membuat saya terus belajar.
+          </p>
+          <p>
+            Yang membedakan saya bukan hanya kemampuan teknis, tetapi <strong style="color:#171717;font-weight:600;">perhatian terhadap detail</strong>: spacing yang tepat, animasi yang bermakna, kode yang bersih, dan performa yang diutamakan.
+          </p>
+        </div>
+
+        <!-- Stats -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;padding-top:1.5rem;border-top:1px solid #EAEAEA;">
+          {stats.map(({ value, label }) => (
+            <div>
+              <p style="font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;font-weight:800;color:#171717;line-height:1;margin:0 0 4px;">{value}</p>
+              <p style="font-family:'Inter',sans-serif;font-size:0.8125rem;color:#707070;margin:0;">{label}</p>
+            </div>
+          ))}
+        </div>
+
+        <!-- Location -->
+        <p style="display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:0.875rem;color:#707070;margin:0;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          Indonesia
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  @media (max-width: 768px) {
+    .about-layout {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>

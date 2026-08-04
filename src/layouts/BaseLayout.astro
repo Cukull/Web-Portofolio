@@ -1,0 +1,143 @@
+---
+/**
+ * BaseLayout.astro
+ * Layout utama yang dipakai oleh semua halaman.
+ *
+ * Tanggung jawab:
+ *  - HTML <head>: meta tags, SEO, Open Graph, favicon, font preload
+ *  - Import global CSS (Tailwind + custom)
+ *  - Lenis smooth scroll initialization
+ *  - <slot /> untuk konten halaman
+ */
+import { siteConfig } from '../config/site';
+import '../styles/global.css';
+
+// Props yang bisa di-override per halaman
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  canonicalUrl?: string;
+}
+
+const {
+  title = siteConfig.title,
+  description = siteConfig.description,
+  ogImage = siteConfig.ogImage,
+  canonicalUrl = Astro.url.href,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <!-- ─── CHARSET & VIEWPORT ──────────────────────────────────────────── -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- ─── PRIMARY META ────────────────────────────────────────────────── -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={siteConfig.author.name} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- ─── OPEN GRAPH ──────────────────────────────────────────────────── -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="id_ID" />
+    <meta property="og:site_name" content={siteConfig.name} />
+
+    <!-- ─── TWITTER CARD ────────────────────────────────────────────────── -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- ─── FAVICON ─────────────────────────────────────────────────────── -->
+    <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- ─── GOOGLE FONTS PRECONNECT ────────────────────────────────────── -->
+    <!-- Preconnect mempercepat font loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- ─── STRUCTURED DATA (JSON-LD) ──────────────────────────────────── -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "{siteConfig.author.name}",
+        "jobTitle": "{siteConfig.author.jobTitle}",
+        "url": "{siteConfig.url}",
+        "sameAs": [
+          "{siteConfig.social.github}",
+          "{siteConfig.social.linkedin}"
+        ]
+      }
+    </script>
+
+    <!-- ─── THEME COLOR ──────────────────────────────────────────────────── -->
+    <meta name="theme-color" content="#FAFAF7" />
+  </head>
+
+  <body>
+    <!-- Skip to main content — accessibility -->
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-accent focus:text-text-primary focus:rounded-button focus:font-medium"
+    >
+      Skip to main content
+    </a>
+
+    <!-- Konten halaman -->
+    <slot />
+  </body>
+</html>
+
+<!-- ─── SCROLL REVEAL (IntersectionObserver) ─────────────────────── -->
+<script is:inline>
+  // ── Reveal on scroll ──────────────────────────────────────────────
+  (function () {
+    var els = document.querySelectorAll('.reveal-on-scroll');
+    if (!els.length) return;
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+    els.forEach(function (el) { observer.observe(el); });
+  })();
+
+  // ── Smooth scroll for # anchor links ──────────────────────────────
+  document.addEventListener('click', function (e) {
+    var target = e.target.closest('a[href^="#"]');
+    if (!target) return;
+    var id = target.getAttribute('href').slice(1);
+    if (!id) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    var el = document.getElementById(id);
+    if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+
+  // ── Lenis smooth scroll (optional, only if available) ─────────────
+  if (typeof window !== 'undefined') {
+    import('/node_modules/lenis/dist/lenis.mjs').then(function(m) {
+      var Lenis = m.default || m.Lenis;
+      if (!Lenis) return;
+      var lenis = new Lenis({ duration: 1.1, easing: function(t){return 1-Math.pow(1-t,4);} });
+      window.lenis = lenis;
+      function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+      requestAnimationFrame(raf);
+    }).catch(function(){/* lenis not available, use native smooth scroll */});
+  }
+</script>

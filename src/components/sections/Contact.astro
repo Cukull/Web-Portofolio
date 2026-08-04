@@ -1,0 +1,259 @@
+---
+/**
+ * Contact.astro
+ * Layout: konten kiri bebas + orbit animation absolut di pojok kanan (terpotong).
+ * Center orbit didorong ke luar kanan container → hanya separuh orbit visible.
+ */
+import { siteConfig } from '../../config/site';
+import OrbitAnimation from './OrbitAnimation';
+
+const contactInfo = [
+  {
+    label: 'Email',
+    value: 'mochamad@example.com',
+    href: siteConfig.social.email,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>`,
+  },
+  {
+    label: 'LinkedIn',
+    value: 'linkedin.com/in/msyukur',
+    href: siteConfig.social.linkedin,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>`,
+  },
+  {
+    label: 'GitHub',
+    value: 'github.com/msyukur',
+    href: siteConfig.social.github,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>`,
+  },
+];
+---
+
+<!-- Outer section: relative + overflow hidden → clips the orbit at the right edge -->
+<section
+  id="contact"
+  aria-labelledby="contact-heading"
+  style="background:#FAFAF7; padding:120px 0; position:relative; overflow:hidden;"
+>
+
+  <!-- ── Orbit animation: absolute, anchored right, center pushed out ── -->
+  <!-- translateX(50%) pushes center to the right edge so half is clipped -->
+  <div
+    class="orbit-bg"
+    aria-hidden="true"
+    style="
+      position:absolute;
+      right:0;
+      top:50%;
+      transform: translateY(-50%) translateX(28%);
+      z-index:0;
+      pointer-events:none;
+    "
+  >
+    <OrbitAnimation client:load />
+  </div>
+
+  <!-- ── Main content: sits on top of orbit ── -->
+  <div style="position:relative; z-index:1; max-width:1440px; margin:0 auto; padding:0 clamp(1.25rem,4vw,4rem);">
+
+    <!-- Two-column: info left | form right (form sits over orbit area) -->
+    <div class="contact-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4rem); align-items:start;">
+
+      <!-- ── LEFT: heading + badge + links ── -->
+      <div class="reveal-on-scroll" style="display:flex;flex-direction:column;gap:1.75rem;">
+
+        <!-- Section label -->
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#707070;letter-spacing:0.1em;text-transform:uppercase;">
+            05 — Contact
+          </span>
+          <div style="width:60px;height:1px;background:#EAEAEA;"></div>
+        </div>
+
+        <!-- Heading -->
+        <h2 id="contact-heading" style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(2rem,4vw,3.25rem);font-weight:800;color:#171717;letter-spacing:-0.03em;line-height:1.1;margin:0;">
+          Let's build<br/>
+          something<br/>
+          <span style="color:#C6FF34;">great</span> together.
+        </h2>
+
+        <p style="font-family:'Inter',sans-serif;font-size:15px;color:#707070;line-height:1.7;max-width:400px;margin:0;">
+          Saya terbuka untuk proyek freelance, kolaborasi, atau posisi penuh-waktu.
+          Ceritakan apa yang sedang kamu bangun.
+        </p>
+
+        <!-- Availability badge -->
+        <div style="display:inline-flex;align-items:center;gap:12px;padding:12px 16px;border-radius:14px;border:1px solid #EAEAEA;background:#FFFFFF;width:fit-content;">
+          <span class="avail-dot" style="width:10px;height:10px;border-radius:50%;background:#22C55E;flex-shrink:0;"></span>
+          <div>
+            <p style="font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:#171717;margin:0;">Available for work</p>
+            <p style="font-family:'Inter',sans-serif;font-size:12px;color:#707070;margin:0;">Respons dalam 24 jam</p>
+          </div>
+        </div>
+
+        <!-- Quick links -->
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          {contactInfo.map(info => (
+            <a
+              href={info.href}
+              target={info.href.startsWith('mailto') ? undefined : '_blank'}
+              rel={info.href.startsWith('mailto') ? undefined : 'noopener noreferrer'}
+              class="contact-link"
+              style="display:flex;align-items:center;gap:14px;padding:10px 12px;border-radius:12px;border:1px solid transparent;text-decoration:none;transition:border-color 0.15s,background 0.15s;"
+              onmouseover="this.style.borderColor='#EAEAEA';this.style.background='#F5F5F0'"
+              onmouseout="this.style.borderColor='transparent';this.style.background='transparent'"
+            >
+              <span style="width:38px;height:38px;border-radius:10px;background:#F5F5F0;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#707070;">
+                <Fragment set:html={info.icon} />
+              </span>
+              <div>
+                <p style="font-family:'Inter',sans-serif;font-size:11px;color:#707070;margin:0;">{info.label}</p>
+                <p style="font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:#171717;margin:0;">{info.value}</p>
+              </div>
+              <svg style="margin-left:auto;color:#C0C0C0;" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+            </a>
+          ))}
+        </div>
+
+      </div>
+
+      <!-- ── RIGHT: Form (overlays the orbit — has semi-transparent bg) ── -->
+      <div class="reveal-on-scroll" style="transition-delay:100ms;">
+        <form
+          id="contact-form"
+          style="display:flex;flex-direction:column;gap:14px;"
+          novalidate
+          onsubmit="handleContactSubmit(event)"
+        >
+          <!-- Name + Email -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <label for="contact-name" class="form-label">Nama</label>
+              <input id="contact-name" type="text" name="name" autocomplete="name" placeholder="Nama kamu" required class="form-input"/>
+            </div>
+            <div>
+              <label for="contact-email" class="form-label">Email</label>
+              <input id="contact-email" type="email" name="email" autocomplete="email" placeholder="email@example.com" required class="form-input"/>
+            </div>
+          </div>
+
+          <!-- Subject -->
+          <div>
+            <label for="contact-subject" class="form-label">Subjek</label>
+            <input id="contact-subject" type="text" name="subject" placeholder="Tentang apa proyek ini?" class="form-input"/>
+          </div>
+
+          <!-- Message -->
+          <div>
+            <label for="contact-message" class="form-label">Pesan</label>
+            <textarea id="contact-message" name="message" rows={5} placeholder="Ceritakan projekmu — timeline, scope, anggaran, dll." required class="form-input" style="resize:none;"></textarea>
+          </div>
+
+          <!-- Submit -->
+          <button
+            id="contact-submit"
+            type="submit"
+            class="submit-btn"
+            style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;border-radius:14px;border:none;background:#C6FF34;color:#171717;font-family:'Inter',sans-serif;font-weight:600;font-size:15px;cursor:pointer;transition:background 0.15s,transform 0.15s;letter-spacing:-0.01em;"
+            onmouseover="this.style.background='#b8f020';this.style.transform='translateY(-2px)'"
+            onmouseout="this.style.background='#C6FF34';this.style.transform='translateY(0)'"
+          >
+            <span id="submit-text">Kirim Pesan</span>
+            <svg id="submit-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            <svg id="submit-spinner" class="hidden" style="animation:contact-spin 0.8s linear infinite;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          </button>
+
+          <div id="form-feedback" class="hidden" style="text-align:center;padding:12px 16px;border-radius:12px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;"></div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  .form-label {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #171717;
+    margin-bottom: 6px;
+    letter-spacing: 0.01em;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.8125rem 1rem;
+    background: #FFFFFF;
+    border: 1.5px solid #EAEAEA;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9375rem;
+    color: #171717;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    outline: none;
+    box-sizing: border-box;
+  }
+  .form-input::placeholder { color: #B0B0B0; }
+  .form-input:focus {
+    border-color: #C6FF34;
+    box-shadow: 0 0 0 3px rgba(198,255,52,0.18);
+  }
+  .form-input:invalid:not(:placeholder-shown) { border-color: #F15B5B; }
+
+  @keyframes avail-pulse {
+    0%, 100% { opacity:1; box-shadow:0 0 0 0 rgba(34,197,94,0.4); }
+    50%       { opacity:0.85; box-shadow:0 0 0 5px rgba(34,197,94,0); }
+  }
+  .avail-dot { animation: avail-pulse 2s ease infinite; }
+
+  @keyframes contact-spin { to { transform:rotate(360deg); } }
+  .hidden { display:none !important; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .contact-grid {
+      grid-template-columns: 1fr !important;
+    }
+    .orbit-bg {
+      /* On mobile: center it behind, smaller translate */
+      right: -20% !important;
+      transform: translateY(-50%) translateX(0%) !important;
+      opacity: 0.35 !important;
+    }
+  }
+</style>
+
+<script is:inline>
+  function handleContactSubmit(e) {
+    e.preventDefault();
+    const form    = document.getElementById('contact-form');
+    const btn     = document.getElementById('contact-submit');
+    const text    = document.getElementById('submit-text');
+    const arrow   = document.getElementById('submit-arrow');
+    const spinner = document.getElementById('submit-spinner');
+    const fb      = document.getElementById('form-feedback');
+
+    btn.disabled = true;
+    text.textContent = 'Mengirim...';
+    arrow.classList.add('hidden');
+    spinner.classList.remove('hidden');
+
+    setTimeout(() => {
+      spinner.classList.add('hidden');
+      arrow.classList.remove('hidden');
+      btn.disabled = false;
+      text.textContent = 'Kirim Pesan';
+
+      fb.classList.remove('hidden');
+      fb.style.background = 'rgba(198,255,52,0.12)';
+      fb.style.border = '1px solid rgba(198,255,52,0.35)';
+      fb.style.color = '#2D3A00';
+      fb.textContent = '✓ Pesanmu terkirim! Saya akan merespons dalam 24 jam.';
+
+      form.reset();
+      setTimeout(() => fb.classList.add('hidden'), 5000);
+    }, 2000);
+  }
+</script>

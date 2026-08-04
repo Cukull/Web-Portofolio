@@ -1,0 +1,16 @@
+---
+/**
+ * Container.astro
+ * Wrapper responsif dengan max-width 1200px dan padding konsisten.
+ * Dipakai di semua section.
+ */
+interface Props {
+  class?: string;
+  as?: string;
+}
+const { class: className = '', as: Tag = 'div' } = Astro.props;
+---
+
+<Tag class={`container ${className}`}>
+  <slot />
+</Tag>

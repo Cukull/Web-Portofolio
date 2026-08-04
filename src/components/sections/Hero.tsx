@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import FloatingIcons from './FloatingIcons';
+import CountUp from '../ui/CountUp';
 
 const LIME   = '#C6FF34';
 const CARBON = '#171717';
@@ -39,9 +40,9 @@ export default function Hero() {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   const stats = [
-    { value: '2+',  label: 'Tahun Pengalaman' },
-    { value: '10+', label: 'Project Selesai'   },
-    { value: '5+',  label: 'Happy Clients'     },
+    { number: 2,  suffix: '+', label: 'Tahun Pengalaman' },
+    { number: 10, suffix: '+', label: 'Project Selesai'   },
+    { number: 5,  suffix: '+', label: 'Happy Clients'     },
   ];
 
   return (
@@ -219,7 +220,12 @@ export default function Hero() {
                       fontSize: 28, fontWeight: 800,
                       color: CARBON, lineHeight: 1,
                     }}>
-                      {s.value}
+                      <CountUp
+                        from={0}
+                        to={s.number}
+                        suffix={s.suffix}
+                        duration={1.8}
+                      />
                     </div>
                     <div style={{
                       fontFamily: "'Inter',sans-serif",

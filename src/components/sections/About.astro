@@ -5,10 +5,12 @@
  * Tidak bergantung pada komponen eksternal.
  */
 
+import CountUp from '../ui/CountUp';
+
 const stats = [
-  { value: '10+', label: 'Project Selesai' },
-  { value: '2+',  label: 'Tahun Pengalaman' },
-  { value: '5+',  label: 'Tech Stack' },
+  { number: 10, suffix: '+', label: 'Project Selesai' },
+  { number: 2,  suffix: '+', label: 'Tahun Pengalaman' },
+  { number: 5,  suffix: '+', label: 'Tech Stack' },
 ];
 ---
 
@@ -72,9 +74,17 @@ const stats = [
 
         <!-- Stats -->
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;padding-top:1.5rem;border-top:1px solid #EAEAEA;">
-          {stats.map(({ value, label }) => (
+          {stats.map(({ number, suffix, label }) => (
             <div>
-              <p style="font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;font-weight:800;color:#171717;line-height:1;margin:0 0 4px;">{value}</p>
+              <p style="font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;font-weight:800;color:#171717;line-height:1;margin:0 0 4px;">
+                <CountUp
+                  client:visible
+                  from={0}
+                  to={number}
+                  suffix={suffix}
+                  duration={1.8}
+                />
+              </p>
               <p style="font-family:'Inter',sans-serif;font-size:0.8125rem;color:#707070;margin:0;">{label}</p>
             </div>
           ))}

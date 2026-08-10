@@ -150,19 +150,19 @@ const iconMap: Record<string, JSX.Element> = {
 };
 
 const floatingCards = [
-  { id: "js",       pos: { left: "2.5%", top: "20%" },    size: 52, opacity: 1,    delay: 0 },
-  { id: "ts",       pos: { left: "5.5%", top: "35%" },    size: 44, opacity: 0.85, delay: 0.9 },
-  { id: "git",      pos: { left: "2%",   top: "65%" },    size: 46, opacity: 0.8,  delay: 0.4 },
-  { id: "vscode",   pos: { left: "6%",   top: "80%" },    size: 52, opacity: 0.9,  delay: 1.2 },
-  { id: "react",    pos: { left: "44%",  top: "4.5%" },   size: 58, opacity: 0.9,  delay: 0.6 },
-  { id: "npm",      pos: { left: "33%",  bottom: "9%" },  size: 44, opacity: 0.7,  delay: 1.0 },
-  { id: "node",     pos: { right: "14%", top: "9%" },     size: 52, opacity: 1,    delay: 0.3 },
-  { id: "github",   pos: { right: "3%",  top: "20%" },    size: 46, opacity: 0.75, delay: 0.9 },
-  { id: "figma",    pos: { right: "2%",  top: "40%" },    size: 54, opacity: 0.85, delay: 0.5 },
-  { id: "spotify",  pos: { right: "3%",  top: "57%" },    size: 42, opacity: 0.55, delay: 1.4 },
-  { id: "tailwind", pos: { right: "4%",  top: "73%" },    size: 48, opacity: 0.7,  delay: 0.7 },
+  { id: "js", pos: { left: "2.5%", top: "20%" }, size: 52, opacity: 1, delay: 0 },
+  { id: "ts", pos: { left: "5.5%", top: "35%" }, size: 44, opacity: 0.85, delay: 0.9 },
+  { id: "git", pos: { left: "2%", top: "65%" }, size: 46, opacity: 0.8, delay: 0.4 },
+  { id: "vscode", pos: { left: "6%", top: "80%" }, size: 52, opacity: 0.9, delay: 1.2 },
+  { id: "react", pos: { left: "44%", top: "4.5%" }, size: 58, opacity: 0.9, delay: 0.6 },
+  { id: "npm", pos: { left: "33%", bottom: "9%" }, size: 44, opacity: 0.7, delay: 1.0 },
+  { id: "node", pos: { right: "14%", top: "9%" }, size: 52, opacity: 1, delay: 0.3 },
+  { id: "github", pos: { right: "3%", top: "20%" }, size: 46, opacity: 0.75, delay: 0.9 },
+  { id: "figma", pos: { right: "2%", top: "40%" }, size: 54, opacity: 0.85, delay: 0.5 },
+  { id: "spotify", pos: { right: "3%", top: "57%" }, size: 42, opacity: 0.55, delay: 1.4 },
+  { id: "tailwind", pos: { right: "4%", top: "73%" }, size: 48, opacity: 0.7, delay: 0.7 },
   { id: "linkedin", pos: { right: "17%", bottom: "14%" }, size: 52, opacity: 0.85, delay: 0.2 },
-  { id: "x",        pos: { right: "5%",  bottom: "7%" },  size: 40, opacity: 0.6,  delay: 1.1 },
+  { id: "x", pos: { right: "5%", bottom: "7%" }, size: 40, opacity: 0.6, delay: 1.1 },
 ];
 
 function FloatingIconCard({
@@ -282,8 +282,8 @@ export function Hero() {
                 letterSpacing: "-0.03em",
               }}
             >
-              Crafting<br />
-              digital products<br />
+              Mochamad<br />
+              Syukur<br />
               that{" "}
               <em
                 style={{

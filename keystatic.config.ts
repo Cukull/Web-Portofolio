@@ -1,6 +1,6 @@
 import { config, fields, collection, singleton } from '@keystatic/core';
 
-const isProd = process.env.NODE_ENV === 'production';
+const isProd = import.meta.env.PROD;
 
 export default config({
   storage: isProd

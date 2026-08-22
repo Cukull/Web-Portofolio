@@ -4,6 +4,7 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import keystatic from '@keystatic/astro';
+import vercel from '@astrojs/vercel';
 
 /**
  * Astro Configuration
@@ -31,6 +32,7 @@ export default defineConfig({
   // Astro Content Collections
   // src/content/ akan auto-detected
 
-  // Output: static site
+  // Output: static site dengan Keystatic SSR
   output: 'static',
+  adapter: vercel(),
 });

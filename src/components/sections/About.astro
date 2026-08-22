@@ -6,16 +6,12 @@
  */
 
 import CountUp from '../ui/CountUp';
-import ReactionWidget from '../ui/ReactionWidget';
+import CircularTestimonials from '../ui/circular-testimonials';
 
-// Masukkan path foto kamu di folder public, misal: '/images/profil.jpg'
-const profileImageUrl = '/images/profill.jpeg';
+// Fetch data from CMS (Keystatic Singleton)
+import aboutData from '../../content/singletons/about.json';
 
-const stats = [
-  { number: 10, suffix: '+', label: 'Project Selesai' },
-  { number: 2,  suffix: '+', label: 'Tahun Pengalaman' },
-  { number: 5,  suffix: '+', label: 'Tech Stack' },
-];
+const { sectionLabel, stats, testimonials } = aboutData;
 ---
 
 <section
@@ -24,98 +20,70 @@ const stats = [
   style="background:#FAFAF7;padding:120px 0;"
 >
   <div style="max-width:1440px;margin:0 auto;padding:0 clamp(1.25rem,4vw,4rem);">
-    <div class="about-layout reveal-on-scroll" style="display:grid;grid-template-columns:5fr 7fr;gap:clamp(2rem,5vw,5rem);align-items:start;">
-
-      <!-- Photo card -->
-      <div style="position:relative;">
-        <div
-          style="background:#FFFFFF;border:1px solid #EAEAEA;border-radius:28px;padding:0px;box-shadow:0 10px 40px -10px rgba(23,23,23,0.06);position:relative;"
-        >
-          {profileImageUrl ? (
-            <img
-              src={profileImageUrl}
-              alt="Foto Mochamad Syukur"
-              style="aspect-ratio:4/5;width:100%;object-fit:cover;border-radius:20px;display:block;"
-            />
-          ) : (
-            <div
-              role="img"
-              aria-label="Foto workspace Mochamad Syukur"
-              style="aspect-ratio:4/5;width:100%;border-radius:20px;overflow:hidden;background:linear-gradient(160deg,#E5E2E1 0%,#C3C9AE 50%,#A3D800 100%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:2rem;"
-            >
-              <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.2);margin-bottom:10px;"></div>
-              <p style="font-family:'Inter',sans-serif;font-size:12px;color:rgba(255,255,255,0.7);">Foto akan ditambahkan</p>
-            </div>
-          )}
-
-          <ReactionWidget client:visible imageId="about-profile" position="bottom-right" />
-        </div>
-        <!-- Accent circle -->
-        <div
-          aria-hidden="true"
-          style="position:absolute;bottom:-12px;right:-12px;width:80px;height:80px;border-radius:50%;border:4px solid #C6FF34;opacity:0.3;"
-        ></div>
-      </div>
-
-      <!-- Content -->
-      <div class="about-content" style="display:flex;flex-direction:column;gap:2rem;">
-
-        <!-- Section label -->
+    <div class="reveal-on-scroll" style="display:flex;flex-direction:column;gap:4rem;">
+      <!-- Section label -->
+      <div style="display:flex;flex-direction:column;gap:2rem;">
         <div style="display:flex;align-items:center;gap:12px;">
           <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#707070;letter-spacing:0.1em;text-transform:uppercase;">
-            01 — About
+            {sectionLabel}
           </span>
           <div style="width:60px;height:1px;background:#EAEAEA;"></div>
         </div>
-
-        <!-- Heading -->
-        <div id="about-heading" style="margin:0;">
-          <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.75rem,3.5vw,2.5rem);font-weight:700;color:#171717;letter-spacing:-0.03em;line-height:1.1;margin:0;">
-            Saya membangun produk, bukan sekadar aplikasi.
-          </h2>
-        </div>
-
-        <!-- Story -->
-        <div style="display:flex;flex-direction:column;gap:1rem;font-family:'Inter',sans-serif;font-size:0.9375rem;color:#707070;line-height:1.7;">
-          <p>
-            Saya adalah seorang <strong style="color:#171717;font-weight:600;">Web Developer</strong> yang percaya bahwa kode yang baik adalah kode yang bisa dibaca, dipahami, dan dikembangkan — bukan hanya yang berjalan dengan benar.
-          </p>
-          <p>
-            Saya memulai perjalanan di dunia development karena rasa ingin tahu yang besar terhadap bagaimana sebuah produk digital dibuat dari nol hingga bisa digunakan banyak orang. Proses itu — dari desain hingga deployment — yang membuat saya terus belajar.
-          </p>
-          <p>
-            Yang membedakan saya bukan hanya kemampuan teknis, tetapi <strong style="color:#171717;font-weight:600;">perhatian terhadap detail</strong>: spacing yang tepat, animasi yang bermakna, kode yang bersih, dan performa yang diutamakan.
-          </p>
-        </div>
-
-        <!-- Stats -->
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;padding-top:1.5rem;border-top:1px solid #EAEAEA;">
-          {stats.map(({ number, suffix, label }) => (
-            <div>
-              <p style="font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;font-weight:800;color:#171717;line-height:1;margin:0 0 4px;">
-                <CountUp
-                  client:visible
-                  from={0}
-                  to={number}
-                  suffix={suffix}
-                  duration={1.8}
-                />
-              </p>
-              <p style="font-family:'Inter',sans-serif;font-size:0.8125rem;color:#707070;margin:0;">{label}</p>
-            </div>
-          ))}
-        </div>
-
-        <!-- Location -->
-        <p style="display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:0.875rem;color:#707070;margin:0;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
-          Indonesia
-        </p>
       </div>
 
+      <!-- Content Area: Testimonials (Left) & Vertical Stats (Right) -->
+      <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:4rem; width:100%;">
+        
+        <!-- Circular Testimonials -->
+        <div style="flex:1; min-width:min(100%, 600px); margin-left:-2rem;">
+          <CircularTestimonials 
+            client:visible 
+            testimonials={testimonials}
+            colors={{
+              name: "#171717",
+              designation: "#707070",
+              testimony: "#171717",
+              arrowBackground: "#FFFFFF",
+              arrowForeground: "#171717",
+              arrowHoverBackground: "#C6FF34",
+            }}
+            fontSizes={{
+              name: "1.5rem",
+              designation: "0.9375rem",
+              quote: "1.25rem",
+            }}
+          />
+        </div>
+
+        <!-- Vertical Stats -->
+        <div style="display:flex; flex-direction:column; gap:3rem; width:220px; flex-shrink:0;">
+          <div style="display:flex; flex-direction:column; gap:2.5rem;">
+            {stats.map(({ number, suffix, label }) => (
+              <div style="border-left: 2px solid #EAEAEA; padding-left: 1.25rem;">
+                <p style="font-family:'Bricolage Grotesque',sans-serif;font-size:2.5rem;font-weight:800;color:#171717;line-height:1;margin:0 0 8px;">
+                  <CountUp
+                    client:visible
+                    from={0}
+                    to={number}
+                    suffix={suffix}
+                    duration={1.8}
+                  />
+                </p>
+                <p style="font-family:'Inter',sans-serif;font-size:0.875rem;color:#707070;margin:0;">{label}</p>
+              </div>
+            ))}
+          </div>
+
+          <!-- Location -->
+          <p style="display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:0.875rem;color:#707070;margin:0;padding-left:1.25rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            Indonesia
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </section>

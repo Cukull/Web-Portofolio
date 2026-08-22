@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
+import keystatic from '@keystatic/astro';
 
 /**
  * Astro Configuration
@@ -17,6 +18,7 @@ export default defineConfig({
   // Integrations
   integrations: [
     react(), // React islands untuk komponen interaktif
+    keystatic(), // Keystatic CMS Admin Panel
   ],
 
   // Vite plugins

@@ -92,9 +92,9 @@ allCertificates.sort((a, b) => a.data.order - b.data.order);
                   </span>
                 </div>
 
-                {cert.data.credentialUrl && (
+                {(cert.data.pdfFile || cert.data.credentialUrl) && (
                   <a
-                    href={cert.data.credentialUrl}
+                    href={cert.data.pdfFile || cert.data.credentialUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     class="cert-cta-btn"

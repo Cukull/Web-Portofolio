@@ -1,0 +1,22 @@
+{
+  "headline": "Membangun\nWebsite yang\nBercerita.",
+  "subheadline": "Hi, saya Syukur. Seorang Frontend Developer berbasis di Indonesia, spesialis dalam merancang antarmuka yang bersih, cepat, dan memberikan pengalaman interaktif yang bermakna.",
+  "statusLabel": "Available for work",
+  "stats": [
+    {
+      "number": 2,
+      "suffix": "+",
+      "label": "Tahun Pengalaman"
+    },
+    {
+      "number": 10,
+      "suffix": "+",
+      "label": "Project Selesai"
+    },
+    {
+      "number": 5,
+      "suffix": "+",
+      "label": "Happy Clients"
+    }
+  ]
+}

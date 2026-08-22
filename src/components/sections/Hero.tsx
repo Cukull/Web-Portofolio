@@ -32,6 +32,8 @@ function PingDot({ color = '#22C55E' }: { color?: string }) {
   );
 }
 
+import heroData from '../../content/singletons/hero.json';
+
 /* ── Main Hero ─────────────────────────────────────────────────── */
 export default function Hero() {
   const [mounted, setMounted] = useState(false);
@@ -40,11 +42,7 @@ export default function Hero() {
   const scrollTo = (id: string) =>
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
-  const stats = [
-    { number: 2,  suffix: '+', label: 'Tahun Pengalaman' },
-    { number: 10, suffix: '+', label: 'Project Selesai'   },
-    { number: 5,  suffix: '+', label: 'Happy Clients'     },
-  ];
+  const stats = heroData.stats || [];
 
   return (
     <>
@@ -105,7 +103,7 @@ export default function Hero() {
                   fontFamily: "'Inter',sans-serif",
                   fontSize: 12.5, color: SLATE, fontWeight: 500,
                 }}>
-                  Available for new projects
+                  {heroData.statusLabel || 'Available for new projects'}
                 </span>
               </div>
 
@@ -119,13 +117,12 @@ export default function Hero() {
                 letterSpacing: '-0.03em',
                 margin: 0,
               }}>
-                Crafting<br />
-                digital products<br />
-                that{' '}
-                <em style={{ fontStyle: 'italic', color: SLATE, fontWeight: 700 }}>
-                  move
-                </em>{' '}
-                people.
+                {heroData.headline.split('\n').map((line, i) => (
+                  <span key={i}>
+                    {line}
+                    <br />
+                  </span>
+                ))}
               </h1>
 
               {/* Sub-line */}
@@ -138,11 +135,7 @@ export default function Hero() {
                 marginTop: 24,
                 marginBottom: 0,
               }}>
-                Saya{' '}
-                <strong style={{ color: CARBON, fontWeight: 600 }}>
-                  Mochamad Syukur
-                </strong>{' '}
-                — Web Developer yang menjembatani engineering bersih dengan desain yang thoughtful.
+                {heroData.subheadline}
               </p>
 
               {/* CTAs */}

@@ -32,7 +32,9 @@ export function Navbar() {
           }
         });
       },
-      { threshold: 0.3, rootMargin: '-80px 0px -40% 0px' }
+      // Using threshold 0 with a negative root margin ensures tall sections 
+      // trigger as long as they span the middle of the viewport.
+      { threshold: 0, rootMargin: '-20% 0px -60% 0px' }
     );
 
     sectionIds.forEach((id) => {

@@ -13,47 +13,22 @@ const SLATE  = '#707070';
 const BORDER = '#EAEAEA';
 const BG     = '#FAFAF7';
 
-const projects = [
-  {
-    id: 'project-web-filmku',
-    name: 'Web Filmku',
-    tagline: 'Filmku adalah sebuah website untuk membeli tiket bioskop online.',
-    description: 'Filmku adalah sebuah website untuk membeli tiket bioskop online. Dibangun dari nol hingga production dalam 2 minggu dengan fokus pada performa dan UX.',
-    tags: ['Next.js', 'React', 'SCSS', 'Bootstrap'],
-    role: 'Full-Stack Developer',
+const projectFiles = Object.values(import.meta.glob('../../content/projects/*.md', { eager: true })) as any[];
+const projects = projectFiles
+  .sort((a, b) => (a.frontmatter.order || 0) - (b.frontmatter.order || 0))
+  .map((p, index) => ({
+    id: p.url || p.file.split('/').pop().replace('.md', ''),
+    name: p.frontmatter.title || 'Untitled',
+    tagline: p.frontmatter.description || '',
+    description: p.frontmatter.problem || p.frontmatter.description || '',
+    tags: p.frontmatter.technology || [],
+    role: 'Developer', // Placeholder role as it's not in schema
     year: '2024',
-    imageUrl: '/images/filmku.png', // <-- Masukkan path gambar di folder public, misal: '/images/project1.png'
+    imageUrl: p.frontmatter.cover || '',
     bgGradient: 'linear-gradient(135deg, #E5E2E1 0%, #C3C9AE 60%, #A3D800 100%)',
-    imageAlt: 'Web Filmku',
-    imageLeft: false,
-  },
-  {
-    id: 'project-dashboard',
-    name: 'Analytics Dashboard',
-    tagline: 'Data real-time yang mudah dibaca dan diinterpretasikan.',
-    description: 'Dashboard analytics untuk visualisasi data bisnis dengan grafik interaktif, filter dinamis, dan laporan otomatis. Membantu tim mengambil keputusan lebih cepat berdasarkan data akurat.',
-    tags: ['React', 'Node.js', 'MySQL', 'Recharts', 'REST API'],
-    role: 'Lead Engineer & Designer',
-    year: '2023',
-    imageUrl: '', // <-- Masukkan path gambar di folder public, misal: '/images/project2.png'
-    bgGradient: 'linear-gradient(135deg, #C3C9AE 0%, #747A62 40%, #4C6700 100%)',
-    imageAlt: 'Analytics Dashboard mockup',
-    imageLeft: true,
-  },
-  {
-    id: 'project-uikit',
-    name: 'UI Component Library',
-    tagline: 'Design system komprehensif untuk konsistensi produk.',
-    description: 'Sistem desain dengan 50+ komponen responsif berbasis Tailwind CSS dan React. Mendukung dark mode, aksesibilitas WCAG 2.1, dan dokumentasi Storybook yang lengkap untuk penggunaan tim.',
-    tags: ['React', 'Tailwind CSS', 'Storybook', 'TypeScript', 'Figma'],
-    role: 'Design Engineer',
-    year: '2022',
-    imageUrl: '', // <-- Masukkan path gambar di folder public, misal: '/images/project3.png'
-    bgGradient: 'linear-gradient(135deg, #FAFAF7 0%, #EAEAEA 50%, #C6FF34 100%)',
-    imageAlt: 'UI Component Library showcase',
-    imageLeft: false,
-  },
-];
+    imageAlt: p.frontmatter.title,
+    imageLeft: index % 2 !== 0,
+  }));
 ---
 
 <section id="projects" aria-labelledby="projects-heading" style="background:#FAFAF7;padding:120px 0;">

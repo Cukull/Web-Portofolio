@@ -12,62 +12,30 @@ const SLATE  = '#707070';
 const BORDER = '#EAEAEA';
 const CREAM  = '#F5F5F0';
 
-const experience = [
-  {
-    id: 'exp-freelance',
-    company: 'Freelance',
-    role: 'Web Developer',
-    period: '2023 — Sekarang',
-    description: 'Mengembangkan aplikasi web full-stack untuk berbagai klien — dari landing page hingga sistem manajemen internal. Fokus pada performa, aksesibilitas, dan kode yang maintainable.',
-    tags: ['React', 'Next.js', 'Tailwind', 'Node.js'],
-    current: true,
-  },
-  {
-    id: 'exp-digital-nusantara',
-    company: 'PT. Digital Nusantara',
-    role: 'Junior Web Developer',
-    period: '2022 — 2023',
-    description: 'Berkontribusi pada pengembangan platform e-commerce skala menengah. Berkolaborasi dengan tim desain untuk mengimplementasikan UI pixel-perfect dari Figma ke kode.',
-    tags: ['PHP', 'Laravel', 'MySQL', 'jQuery'],
-    current: false,
-  },
-  {
-    id: 'exp-startup',
-    company: 'Startup Teknologi',
-    role: 'Frontend Developer Intern',
-    period: '2021 — 2022',
-    description: 'Magang 6 bulan mengerjakan fitur dashboard analytics. Belajar dari senior developer tentang clean code, code review, dan agile workflow di lingkungan startup yang cepat.',
-    tags: ['React', 'TypeScript', 'REST API'],
-    current: false,
-  },
-];
+const expFiles = Object.values(import.meta.glob('../../content/experience/*.md', { eager: true })) as any[];
+const experience = expFiles
+  .sort((a, b) => (a.frontmatter.order || 0) - (b.frontmatter.order || 0))
+  .map(p => ({
+    id: p.url || p.file.split('/').pop().replace('.md', ''),
+    company: p.frontmatter.company || 'Unknown',
+    role: p.frontmatter.position || '',
+    period: `${p.frontmatter.startDate || ''} — ${p.frontmatter.endDate || 'Present'}`,
+    description: p.frontmatter.location ? `${p.frontmatter.location} - ${p.frontmatter.type}` : '',
+    tags: [p.frontmatter.type].filter(Boolean),
+    current: (p.frontmatter.endDate || '').toLowerCase() === 'present' || !p.frontmatter.endDate,
+  }));
 
-const education = [
-  {
-    id: 'edu-university',
-    institution: 'Universitas [Nama]',
-    degree: 'S1 Teknik Informatika',
-    period: '2019 — 2023',
-    description: 'Lulus dengan predikat memuaskan. Fokus pada rekayasa perangkat lunak, basis data, dan pemrograman web. Tugas akhir tentang sistem rekomendasi berbasis machine learning.',
-    tags: ['Algoritma', 'Database', 'Web Dev'],
-  },
-  {
-    id: 'edu-bootcamp',
-    institution: 'Dicoding / Bangkit',
-    degree: 'Full-Stack Web Development',
-    period: '2022',
-    description: 'Program intensif pengembangan web full-stack selama 6 bulan. Mempelajari React, Node.js, dan praktik industri terbaik. Menyelesaikan 3 proyek capstone dalam tim.',
-    tags: ['React', 'Node.js', 'Capstone'],
-  },
-  {
-    id: 'edu-selftaught',
-    institution: 'Self-taught / Open Source',
-    degree: 'Continuous Learning',
-    period: '2019 — Sekarang',
-    description: '100+ kontribusi di GitHub. Belajar dari Frontend Masters, Egghead, dan membaca semua hal dari Clean Code hingga Design Patterns. Selalu update dengan teknologi terbaru.',
-    tags: ['OSS', 'GitHub', 'Learning'],
-  },
-];
+const eduFiles = Object.values(import.meta.glob('../../content/education/*.md', { eager: true })) as any[];
+const education = eduFiles
+  .sort((a, b) => (a.frontmatter.order || 0) - (b.frontmatter.order || 0))
+  .map(p => ({
+    id: p.url || p.file.split('/').pop().replace('.md', ''),
+    institution: p.frontmatter.institution || 'Unknown',
+    degree: p.frontmatter.degree || '',
+    period: `${p.frontmatter.startDate || ''} — ${p.frontmatter.endDate || ''}`,
+    description: p.frontmatter.field || '',
+    tags: [],
+  }));
 ---
 
 <section

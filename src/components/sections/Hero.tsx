@@ -140,6 +140,9 @@ export default function Hero() {
         { number: 6, suffix: '', label: 'Certifications' },
       ];
 
+  const portraitSrc = heroData.portrait || '/images/hero.jpeg';
+  const portraitFallback = '/images/profil.jpeg';
+
   return (
     <>
       <section className="hero-stage" id="top">
@@ -246,11 +249,19 @@ export default function Hero() {
               <figure className="avatar" style={{ '--i': 1 } as React.CSSProperties}>
                 <span className="tape tape--top" aria-hidden="true"></span>
                 <img
-                  src={heroData.portrait || '/images/hero.jpeg'}
+                  src={portraitSrc}
                   width={640}
                   height={640}
                   alt={heroData.portraitAlt || 'Potret Mochamad Syukur'}
                   fetchPriority="high"
+                  onError={(event) => {
+                    const img = event.currentTarget;
+                    // Jangan biarkan foto hero kosong kalau file CMS terhapus
+                    // atau path-nya berubah. Pakai foto profil yang tersedia.
+                    if (img.dataset.fallbackApplied === 'true') return;
+                    img.dataset.fallbackApplied = 'true';
+                    img.src = portraitFallback;
+                  }}
                 />
                 <figcaption>{heroData.portraitMeta || 'Indonesia, 2026'}</figcaption>
               </figure>

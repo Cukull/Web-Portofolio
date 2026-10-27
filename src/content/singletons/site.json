@@ -6,7 +6,7 @@
   "tagline": "Membangun aplikasi web yang rapi di siang hari, dan mengeksplorasi teknologi baru di malam hari.",
   "description": "Portfolio pribadi Mochamad Syukur — Web Developer & mahasiswa Ilmu Komputer di Bandung, Indonesia yang fokus pada kualitas UI, jaringan komputer, dan performa web.",
   "url": "https://mochamad-syukur.dev",
-  "ogImage": "/images/hero.jpeg",
+  "ogImage": "/images/ogImage.JPG",
   "author": {
     "name": "Mochamad Syukur",
     "jobTitle": "Web Developer",
@@ -15,13 +15,13 @@
   "social": {
     "github": "https://github.com/Cukull",
     "linkedin": "https://linkedin.com/in/msyukur",
-    "instagram": "https://instagram.com/msyukur",
-    "emailAddress": "mochamadsyukur@gmail.com"
+    "instagram": "https://instagram.com/cukull_",
+    "emailAddress": "adodenhaagg123@gmail.com"
   },
-  "resumeFile": null,
+  "resumeFile": "/files/resumeFile.pdf",
   "resumeUrl": "/cv.pdf",
   "music": {
-    "src": "/audio/the-reason.mp3",
+    "src": "/audio/music/src.mp3",
     "title": "The Reason",
     "artist": "Sabrina",
     "playingLabel": "playing",
@@ -30,14 +30,41 @@
     "autoplay": true
   },
   "navigation": [
-    { "label": "HOME", "href": "#top" },
-    { "label": "ABOUT", "href": "#about" },
-    { "label": "EXPERIENCE", "href": "#experience" },
-    { "label": "PROJECTS", "href": "#projects" },
-    { "label": "TOOLS", "href": "#toolkit" },
-    { "label": "EDUCATION", "href": "#education" },
-    { "label": "CERTIFICATES", "href": "#certificates" },
-    { "label": "OFF CLOCK", "href": "#off-clock" },
-    { "label": "CONTACT", "href": "#contact" }
+    {
+      "label": "HOME",
+      "href": "#top"
+    },
+    {
+      "label": "ABOUT",
+      "href": "#about"
+    },
+    {
+      "label": "EXPERIENCE",
+      "href": "#experience"
+    },
+    {
+      "label": "PROJECTS",
+      "href": "#projects"
+    },
+    {
+      "label": "TOOLS",
+      "href": "#toolkit"
+    },
+    {
+      "label": "EDUCATION",
+      "href": "#education"
+    },
+    {
+      "label": "CERTIFICATES",
+      "href": "#certificates"
+    },
+    {
+      "label": "OFF CLOCK",
+      "href": "#off-clock"
+    },
+    {
+      "label": "CONTACT",
+      "href": "#contact"
+    }
   ]
 }

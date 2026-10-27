@@ -4,15 +4,14 @@
  *
  * Catatan:
  *  - Browser modern memblokir autoplay bersuara. Kita tetap mencoba memutar
- *    otomatis; kalau ditolak, lagu mulai pada interaksi pertama pengunjung.
- *  - Preferensi pause disimpan di localStorage supaya tidak autoplay lagi
- *    setelah pengunjung sengaja mematikannya.
+ *    otomatis; kalau ditolak, lagu mulai pada interaksi pertama pengunjung
+ *    (klik, sentuh, scroll, atau keyboard).
+ *  - Selama opsi Autoplay aktif di CMS, setiap kunjungan akan mencoba memutar
+ *    lagi. Tombol pause tetap berfungsi untuk sesi yang sedang berjalan.
  *  - Sumber audio & judul diatur dari src/config/site.ts.
  */
 import React from 'react';
 import { siteConfig } from '../../config/site';
-
-const STORAGE_KEY = 'syukur-music';
 
 function PlayIcon() {
   return (
@@ -67,19 +66,9 @@ export default function MusicPlayer() {
     if (!audio) return;
 
     if (audio.paused) {
-      try {
-        localStorage.removeItem(STORAGE_KEY);
-      } catch {
-        /* private mode */
-      }
       void audio.play().catch(() => setPlaying(false));
     } else {
       audio.pause();
-      try {
-        localStorage.setItem(STORAGE_KEY, 'off');
-      } catch {
-        /* private mode */
-      }
     }
   }, []);
 
@@ -90,45 +79,56 @@ export default function MusicPlayer() {
     audio.volume = music.volume;
 
     let cancelled = false;
-    let rememberOff = false;
-    try {
-      rememberOff = localStorage.getItem(STORAGE_KEY) === 'off';
-    } catch {
-      /* private mode */
-    }
+    let autoplayTimer: number | undefined;
+    let lastScrollAttempt = 0;
+
+    const tryPlay = () => {
+      if (cancelled || !audio.paused) return;
+      // Browser bisa memblokir autoplay bersuara. Kalau ditolak, pemutaran
+      // akan dicoba lagi pada interaksi pertama pengunjung.
+      void audio.play().catch(() => {});
+    };
+
+    const interactionEvents = ['pointerdown', 'touchstart', 'keydown', 'scroll'] as const;
 
     function removeUnlock() {
-      window.removeEventListener('pointerdown', unlock);
-      window.removeEventListener('keydown', unlock);
+      interactionEvents.forEach((eventName) => {
+        window.removeEventListener(eventName, unlock);
+      });
     }
 
-    // Jika autoplay ditolak browser, mulai pada interaksi pertama.
-    // Klik pada widget sendiri diserahkan ke tombol play/pause supaya tidak
-    // terjadi play lalu langsung pause pada klik pertama.
     function unlock(event: Event) {
-      removeUnlock();
-      if (event.target instanceof Element && event.target.closest('.music')) return;
-      const player = audioRef.current;
-      if (!cancelled && player?.paused) {
-        void player.play().catch(() => {});
+      // Klik pada widget sendiri diserahkan ke tombol play/pause supaya tidak
+      // terjadi play lalu langsung pause pada klik pertama.
+      if (event.target instanceof Element && event.target.closest('.music')) {
+        removeUnlock();
+        return;
       }
+
+      // Scroll belum tentu dihitung sebagai user activation oleh browser.
+      // Jangan lepas listener lain sebelum play benar-benar berhasil, dan
+      // jangan memanggil play() puluhan kali selama pengunjung menggulir.
+      if (event.type === 'scroll') {
+        const now = Date.now();
+        if (now - lastScrollAttempt < 800) return;
+        lastScrollAttempt = now;
+      } else {
+        removeUnlock();
+      }
+      tryPlay();
     }
 
     const onPlay = () => removeUnlock();
     audio.addEventListener('play', onPlay);
 
-    let autoplayTimer: number | undefined;
+    if (music.autoplay) {
+      // Coba langsung, lalu sekali lagi setelah layar pembuka selesai.
+      tryPlay();
+      autoplayTimer = window.setTimeout(tryPlay, 1800);
 
-    if (music.autoplay && !rememberOff) {
-      window.addEventListener('pointerdown', unlock, { passive: true });
-      window.addEventListener('keydown', unlock);
-
-      // Beri jeda supaya musik mulai berbarengan dengan reveal halaman.
-      autoplayTimer = window.setTimeout(() => {
-        if (!cancelled && audio.paused) {
-          void audio.play().catch(() => {});
-        }
-      }, 1500);
+      interactionEvents.forEach((eventName) => {
+        window.addEventListener(eventName, unlock, { passive: true });
+      });
     }
 
     return () => {
@@ -150,7 +150,8 @@ export default function MusicPlayer() {
         ref={audioRef}
         src={music.src}
         loop
-        preload="metadata"
+        autoPlay={music.autoplay}
+        preload="auto"
         playsInline
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}

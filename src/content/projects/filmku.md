@@ -1,17 +1,26 @@
 ---
 title: FILMKU Website
-description: "Website eksplorasi dan katalog film modern dengan pencarian cepat, tampilan poster, dan antarmuka responsif."
-problem: "Pengguna kesulitan menemukan film berdasarkan suasana hati atau genre di situs katalog yang lambat dan penuh iklan."
-solution: "Membangun katalog film ringan dengan pencarian instan, filter genre, dan layout poster yang bisa dinikmati di mobile maupun desktop."
-result: "Pengalaman menjelajah film yang cepat dan menyenangkan, dengan navigasi yang jelas dan fokus pada konten."
+description: >-
+  Website eksplorasi dan katalog film modern dengan pencarian cepat, tampilan
+  poster, dan antarmuka responsif.
+problem: >-
+  Pengguna kesulitan menemukan film berdasarkan suasana hati atau genre di situs
+  katalog yang lambat dan penuh iklan.
+solution: >-
+  Membangun katalog film ringan dengan pencarian instan, filter genre, dan
+  layout poster yang bisa dinikmati di mobile maupun desktop.
+result: >-
+  Pengalaman menjelajah film yang cepat dan menyenangkan, dengan navigasi yang
+  jelas dan fokus pada konten.
 technology:
   - Astro
   - React
   - TypeScript
   - Tailwind CSS
-cover: /images/filmku.png
+liveUrl: https://filmkunext-phi.vercel.app/
+githubUrl: https://github.com/Cukull/FILMKUPHP.git
 featured: false
-order: 2
+order: 3
 ---
 ## Ringkasan
 

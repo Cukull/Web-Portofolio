@@ -26,6 +26,13 @@ const {
   ogImage = siteConfig.ogImage,
   canonicalUrl = Astro.url.href,
 } = Astro.props;
+
+// Open Graph membutuhkan URL absolut. Path relatif dari CMS seperti
+// /images/ogImage.JPG harus diubah dulu agar terbaca oleh WhatsApp,
+// Facebook, LinkedIn, dan scraper lainnya.
+const ogImageUrl = ogImage
+  ? new URL(ogImage, canonicalUrl).href
+  : new URL('/favicon.svg', canonicalUrl).href;
 ---
 
 <!doctype html>
@@ -46,7 +53,8 @@ const {
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:alt" content={title} />
     <meta property="og:locale" content="id_ID" />
     <meta property="og:site_name" content={siteConfig.name} />
 
@@ -54,7 +62,7 @@ const {
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image" content={ogImageUrl} />
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

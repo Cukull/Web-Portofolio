@@ -21,6 +21,7 @@ technology:
   - Motion
   - Lenis
   - Keystatic
+cover: /images/projects/portfolio-website/cover.png
 liveUrl: https://mochamad-syukur.dev
 githubUrl: https://github.com/Cukull/Web-Portofolio
 featured: true

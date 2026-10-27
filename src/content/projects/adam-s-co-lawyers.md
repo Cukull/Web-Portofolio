@@ -1,22 +1,30 @@
 ---
 title: Adam's Co Lawyers
 description: >-
-  Modul panduan praktikum jaringan komputer dan konfigurasi dasar MikroTik MTCNA
-  untuk membantu mahasiswa memahami routing dan subnetting.
+  Website company profile firma hukum ADAM'S CO LAWYERS yang menampilkan 13
+  bidang layanan, profil tim advokat, berita hukum, dan jalur konsultasi
+  WhatsApp dalam satu pengalaman digital yang formal dan terpercaya.
 problem: >-
-  Materi praktikum jaringan tersebar di banyak file dan sulit diikuti saat sesi
-  laboratorium berlangsung.
+  Firma hukum dengan 13 bidang praktik membutuhkan kehadiran digital yang mampu
+  menjelaskan spesialisasi, membangun kredibilitas, dan mengarahkan calon klien
+  ke konsultasi. Tanpa struktur yang jelas, daftar layanan yang panjang justru
+  membuat pengunjung sulit menemukan informasi yang relevan.
 solution: >-
-  Menyusun panduan bertahap dengan diagram topologi, langkah konfigurasi, dan
-  checklist troubleshooting yang bisa dibaca sambil praktik.
+  Membangun website multi-halaman dengan taksonomi layanan yang terorganisir,
+  halaman detail per bidang praktik, profil tim, berita dan insight, galeri
+  video, FAQ, serta CTA WhatsApp yang konsisten. Desain memakai palet navy,
+  aksen emas, dan tipografi Plus Jakarta Sans untuk menghadirkan kesan
+  profesional, tenang, dan mudah dipercaya.
 result: >-
-  Mahasiswa lebih cepat memahami alur konfigurasi dan asisten lab punya materi
-  acuan yang konsisten.
+  Calon klien dapat memahami layanan, melihat kredibilitas tim, dan langsung
+  berkonsultasi melalui WhatsApp tanpa harus menebak-nebak. Struktur konten yang
+  konsisten juga memudahkan firma mempublikasikan berita, video, dan pembaruan
+  layanan.
 technology:
-  - HTML
-  - CSS
+  - Astro
   - JavaScript
-  - MikroTik
+  - Lenis
+  - CSS
 cover: /images/projects/adam-s-co-lawyers/cover.png
 liveUrl: https://adams-co-lawyers.vercel.app/
 githubUrl: https://github.com/Cukull/adams-co-lawyers.git
@@ -25,10 +33,10 @@ order: 2
 ---
 ## Ringkasan
 
-NetLab Topology Guide adalah kumpulan catatan praktikum jaringan yang dirapikan menjadi modul: dari pengalamatan IP, subnetting, routing statis, sampai konfigurasi dasar MikroTik.
+ADAM'S CO LAWYERS adalah website company profile untuk firma hukum yang menangani kebutuhan hukum individu, keluarga, perusahaan, dan institusi. Situs ini menyatukan 13 bidang praktik, profil tim advokat, berita hukum, video, FAQ, dan jalur konsultasi WhatsApp dalam satu pengalaman yang formal namun tetap mudah dipahami.
 
 ## Isi modul
 
-- Diagram topologi sebelum dan sesudah konfigurasi.
-- Langkah konfigurasi yang bisa diikuti sambil memegang perangkat.
-- Checklist troubleshooting untuk masalah konektivitas umum.
+- Firma hukum perlu tampil kredibel di dunia digital tanpa membuat calon klien merasa berhadapan dengan halaman yang rumit. Dengan 13 bidang layanan—mulai dari pidana, pertanahan, keimigrasian, hukum keluarga, kepailitan, hingga sengketa pemilu—informasi harus terstruktur agar pengunjung bisa menemukan masalah yang relevan tanpa membaca semuanya.
+
+  Tantangan lainnya adalah membangun kepercayaan. Calon klien ingin melihat siapa yang menangani perkara, pengalaman tim, dan aktivitas firma sebelum mengambil keputusan untuk berkonsultasi.

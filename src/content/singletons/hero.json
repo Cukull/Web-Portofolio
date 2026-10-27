@@ -16,14 +16,26 @@
   "primaryCtaLabel": "DOWNLOAD CV",
   "secondaryCtaLabel": "SEE MY WORK",
   "secondaryCtaHref": "#projects",
-  "portrait": "/images/hero.jpeg",
+  "portrait": "/images/portrait.JPG",
   "portraitAlt": "Potret Mochamad Syukur",
   "portraitMeta": "Indonesia, 2026",
   "note": "ps. everything is crafted with care & detail",
   "stats": [
-    { "number": 2, "suffix": "+", "label": "Tahun Pengalaman" },
-    { "number": 10, "suffix": "+", "label": "Project Selesai" },
-    { "number": 5, "suffix": "+", "label": "Happy Clients" }
+    {
+      "number": 2,
+      "suffix": "+",
+      "label": "Tahun Pengalaman"
+    },
+    {
+      "number": 10,
+      "suffix": "+",
+      "label": "Project Selesai"
+    },
+    {
+      "number": 5,
+      "suffix": "+",
+      "label": "Happy Clients"
+    }
   ],
   "marquee": [
     "Astro",

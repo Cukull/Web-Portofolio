@@ -1,0 +1,58 @@
+{
+  "heading": "off the clock",
+  "lede": "A few things I enjoy outside of lectures, network labs, and code.",
+  "cards": [
+    {
+      "name": "Books",
+      "sub": "Self-growth & tech engineering",
+      "note": "There's always one book on the desk being read slowly.",
+      "freq": "Almost daily"
+    },
+    {
+      "name": "Podcasts",
+      "sub": "While coding or commuting",
+      "note": "Great company during late-night debugging or Bandung traffic.",
+      "freq": "Daily commute"
+    },
+    {
+      "name": "Films",
+      "sub": "Sci-fi, thriller, or strong storytelling",
+      "note": "Watching for a bit of escape and visual inspiration (even inspired FILMKU!).",
+      "freq": "Weekend ritual"
+    },
+    {
+      "name": "Sports & Games",
+      "sub": "Campus tournaments & indie games",
+      "note": "From Informatics Sports Championship on court to strategy games at home.",
+      "freq": "When I need a break"
+    }
+  ],
+  "readsTitle": "Read & explored lately",
+  "reads": [
+    {
+      "book": "Filosofi Teras",
+      "who": "Henry Manampiring",
+      "why": "Stoicism made practical when dealing with bugs & deadlines."
+    },
+    {
+      "book": "Clean Code & Refactoring UI",
+      "who": "Robert C. Martin / Adam Wathan & Steve Schoger",
+      "why": "Why small optical details and readable functions matter so much."
+    },
+    {
+      "book": "Atomic Habits",
+      "who": "James Clear",
+      "why": "Compounding 1% improvements every single day."
+    }
+  ],
+  "marquee": [
+    "Network lab by day",
+    "Web apps by night",
+    "Bandung Indonesia",
+    "MikroTik MTCNA",
+    "Astro & React",
+    "Clean UI Enthusiast",
+    "Open for collaboration",
+    "Say hi"
+  ]
+}

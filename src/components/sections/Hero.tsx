@@ -1,316 +1,337 @@
 /**
- * Hero.tsx
- * Main hero section — menggunakan FloatingIcons untuk tech icon chips
- * dengan cursor repulsion physics.
+ * Hero.tsx — Cover Notebook Section + Floating Tech Stack Icons (21st.dev Framer Motion)
+ * Menggabungkan desain buku catatan faquloh.site/classic.html dengan:
+ *  - Animasi teks bergelombang (wave) per-huruf pada nama
+ *  - Efek hover stabilo kuning slide dari kiri ke kanan pada nama
+ *  - Background floating tech stack icons berfisika pegas dari 21st.dev
  */
 
-import { useEffect, useState } from 'react';
-import FloatingIcons from './FloatingIcons';
-import CountUp from '../ui/CountUp';
-import ReactionWidget from '../ui/ReactionWidget';
+import React from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import heroData from '../../content/singletons/hero.json';
+import { siteConfig } from '../../config/site';
+import { FloatingIconsBackground } from '@/components/ui/floating-icons-hero-section';
+import { techStackIcons } from '@/components/ui/floating-icons-hero-demo';
 
-const LIME   = '#C6FF34';
-const CARBON = '#171717';
-const SLATE  = '#707070';
-const CREAM  = '#F5F5F0';
-const BORDER = '#EAEAEA';
-const BG     = '#FAFAF7';
+gsap.registerPlugin(ScrollTrigger);
 
-/* ── Ping dot ──────────────────────────────────────────────────── */
-function PingDot({ color = '#22C55E' }: { color?: string }) {
+/** Teks dengan penanda **stabilo** → <mark class="hl">. */
+function withHighlights(text: string) {
+  return text
+    .split(/(\*\*[^*]+\*\*)/g)
+    .filter(Boolean)
+    .map((part, index) =>
+      part.startsWith('**') && part.endsWith('**') ? (
+        <mark className="hl" key={index}>
+          {part.slice(2, -2)}
+        </mark>
+      ) : (
+        <React.Fragment key={index}>{part}</React.Fragment>
+      ),
+    );
+}
+
+/**
+ * Angka statistik yang menghitung naik setelah layar pembuka selesai.
+ * Nilai final tetap dirender di SSR; animasi baru berjalan setelah hydration.
+ */
+function StatValue({ value, suffix = '' }: { value: number; suffix?: string }) {
+  const ref = React.useRef<HTMLElement>(null);
+
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let tween: ReturnType<typeof gsap.to> | undefined;
+    let observer: MutationObserver | undefined;
+
+    const start = () => {
+      const counter = { n: 0 };
+      el.textContent = `0${suffix}`;
+      tween = gsap.to(counter, {
+        n: value,
+        duration: 1,
+        ease: 'power3.out',
+        onUpdate: () => {
+          el.textContent = `${Math.round(counter.n)}${suffix}`;
+        },
+        onComplete: () => {
+          el.textContent = `${value}${suffix}`;
+        },
+      });
+    };
+
+    const root = document.documentElement;
+    if (root.classList.contains('is-booting')) {
+      observer = new MutationObserver(() => {
+        if (!root.classList.contains('is-booting')) {
+          observer?.disconnect();
+          start();
+        }
+      });
+      observer.observe(root, { attributes: true, attributeFilter: ['class'] });
+    } else {
+      start();
+    }
+
+    return () => {
+      observer?.disconnect();
+      tween?.kill();
+    };
+  }, [value, suffix]);
+
   return (
-    <span style={{ position:'relative', display:'inline-flex', width:10, height:10, flexShrink:0 }}>
-      <span style={{
-        position:'absolute', inset:0, borderRadius:'50%', background:color,
-        animation:'hero-ping 1.4s cubic-bezier(0,0,0.2,1) infinite',
-      }}/>
-      <span style={{
-        position:'relative', display:'inline-flex',
-        borderRadius:'50%', width:10, height:10, background:color,
-      }}/>
-    </span>
+    <dd ref={ref}>
+      {value}
+      {suffix}
+    </dd>
   );
 }
 
-import heroData from '../../content/singletons/hero.json';
-
-/* ── Main Hero ─────────────────────────────────────────────────── */
 export default function Hero() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  const rawLines = (heroData.headline || 'MOCHAMAD\nSYUKUR')
+    .replace(/\./g, '')
+    .trim()
+    .split('\n');
+  const line1 = (rawLines[0] || 'MOCHAMAD').toUpperCase();
+  const line2 = (rawLines[1] || 'SYUKUR').toUpperCase();
 
-  const scrollTo = (id: string) =>
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  const line1Chars = line1.split('');
+  const line2Chars = line2.split('');
 
-  const stats = heroData.stats || [];
+  // Parallax ikon techstack. Dipasang setelah hydration supaya GSAP memegang
+  // node yang benar-benar dipakai React (bukan node SSR yang bisa diganti).
+  React.useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const layer = document.querySelector<HTMLElement>('[data-hero-float]');
+    const stage = document.querySelector<HTMLElement>('.hero-stage');
+    if (!layer || !stage) return;
+
+    const tween = gsap.fromTo(
+      layer,
+      { yPercent: 0 },
+      {
+        yPercent: 12,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: stage,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 0.5,
+          invalidateOnRefresh: true,
+        },
+      }
+    );
+
+    return () => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+    };
+  }, []);
+
+  const stats = heroData.stats && heroData.stats.length >= 3
+    ? heroData.stats
+    : [
+        { number: 2, suffix: '+', label: 'Years Experience' },
+        { number: 10, suffix: '+', label: 'Projects Live' },
+        { number: 6, suffix: '', label: 'Certifications' },
+      ];
 
   return (
     <>
-      <style>{`
-        @keyframes hero-ping {
-          75%, 100% { transform: scale(2.2); opacity: 0; }
-        }
-        @keyframes hero-scroll-line {
-          0%, 100% { transform: translateY(0); }
-          50%       { transform: translateY(8px); }
-        }
-      `}</style>
+      <section className="hero-stage" id="top">
+        {/* 21st.dev Floating Tech Stack Icons with Framer Motion spring repulsion */}
+        <FloatingIconsBackground icons={techStackIcons} />
 
-      <section
-        id="hero"
-        style={{
-          background: BG,
-          minHeight: '100vh',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        {/* ── Floating tech icons with cursor repulsion ── */}
-        <FloatingIcons />
-
-        {/* ── Main content (above icons) ── */}
-        <div style={{
-          position: 'relative',
-          zIndex: 10,
-          maxWidth: 1440,
-          margin: '0 auto',
-          padding: '0 clamp(1.25rem, 4vw, 4rem)',
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-        }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'clamp(2rem, 5vw, 5rem)',
-            width: '100%',
-            paddingTop: '7rem',
-            paddingBottom: '8rem', // Ditambah agar tidak menabrak teks SCROLL
-            flexWrap: 'wrap',
-          }}>
-
-            {/* ── LEFT copy ── */}
-            <div style={{ flex: '1 1 340px', maxWidth: 580 }}>
-
-              {/* Status pill */}
-              <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                padding: '8px 16px', borderRadius: 9999, marginBottom: 32,
-                background: CREAM, border: `1px solid ${BORDER}`,
-              }}>
-                <PingDot />
-                <span style={{
-                  fontFamily: "'Inter',sans-serif",
-                  fontSize: 12.5, color: SLATE, fontWeight: 500,
-                }}>
-                  {heroData.statusLabel || 'Available for new projects'}
-                </span>
+        <div className="hero">
+          <div className="hero__copy">
+            {/* Top of the notebook sheet: printed label, hand-written value */}
+            <dl className="masthead" style={{ '--i': 0 } as React.CSSProperties}>
+              <div className="masthead__cell">
+                <dt className="masthead__k">{heroData.masthead?.currentlyLabel || 'Currently'}</dt>
+                <dd className="masthead__v">{heroData.masthead?.currently || 'USB YPKP Bandung'}</dd>
               </div>
+              <div className="masthead__cell">
+                <dt className="masthead__k">{heroData.masthead?.sinceLabel || 'Since'}</dt>
+                <dd className="masthead__v">{heroData.masthead?.since || 'Oct 2025'}</dd>
+              </div>
+              <div className="masthead__cell">
+                <dt className="masthead__k">{heroData.masthead?.focusLabel || 'Focus'}</dt>
+                <dd className="masthead__v">{heroData.masthead?.focus || 'Frontend, Astro, Network'}</dd>
+              </div>
+            </dl>
 
-              {/* Heading */}
-              <h1 style={{
-                fontFamily: "'Bricolage Grotesque',sans-serif",
-                fontSize: 'clamp(44px, 5.5vw, 80px)',
-                lineHeight: 1.04,
-                fontWeight: 800,
-                color: CARBON,
-                letterSpacing: '-0.03em',
-                margin: 0,
-              }}>
-                {heroData.headline.split('\n').map((line, i) => (
-                  <span key={i}>
-                    {line}
-                    <br />
+            <p className="hero__hand" style={{ '--i': 1 } as React.CSSProperties}>
+              {heroData.handIntro || 'my name is'}
+            </p>
+
+            <h1
+              className="hero__name is-split"
+              style={{ '--i': 2 } as React.CSSProperties}
+              aria-label={`${line1} ${line2}`}
+            >
+              <span className="hero__name-l1" aria-hidden="true">
+                {line1Chars.map((ch, idx) => (
+                  <span
+                    key={`l1-${idx}`}
+                    className="ch"
+                    style={{ '--ci': idx } as React.CSSProperties}
+                  >
+                    {ch.trim() ? <span className="ch__i">{ch}</span> : '\u00A0'}
                   </span>
                 ))}
-              </h1>
-
-              {/* Sub-line */}
-              <p style={{
-                fontFamily: "'Inter',sans-serif",
-                fontSize: 17,
-                lineHeight: 1.65,
-                color: SLATE,
-                maxWidth: 460,
-                marginTop: 24,
-                marginBottom: 0,
-              }}>
-                {heroData.subheadline}
-              </p>
-
-              {/* CTAs */}
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                marginTop: 40,
-                flexWrap: 'wrap',
-              }}>
-                <button
-                  id="hero-view-work"
-                  data-spark-color="#171717"
-                  onClick={() => scrollTo('projects')}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    background: LIME, color: CARBON,
-                    padding: '14px 26px', borderRadius: 14,
-                    fontFamily: "'Inter',sans-serif", fontWeight: 600,
-                    fontSize: 15, border: 'none', cursor: 'pointer',
-                    letterSpacing: '-0.01em', transition: 'background 0.15s, transform 0.15s',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.background = '#b8f020';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.background = LIME;
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }}
-                >
-                  View My Work
-                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
-                </button>
-
-                <a
-                  href="/cv.pdf"
-                  download
-                  id="hero-download-cv"
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    background: 'transparent', color: CARBON,
-                    padding: '14px 26px', borderRadius: 14,
-                    fontFamily: "'Inter',sans-serif", fontWeight: 600,
-                    fontSize: 15, border: `1.5px solid ${BORDER}`,
-                    cursor: 'pointer', letterSpacing: '-0.01em',
-                    textDecoration: 'none', transition: 'border-color 0.15s, transform 0.15s',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.borderColor = CARBON;
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.borderColor = BORDER;
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }}
-                >
-                  <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-                  </svg>
-                  Download CV
-                </a>
-              </div>
-
-              {/* Stats row */}
-              <div style={{
-                display: 'flex', alignItems: 'center',
-                gap: 'clamp(1.5rem, 4vw, 2.5rem)',
-                marginTop: 52, flexWrap: 'wrap',
-              }}>
-                {stats.map(s => (
-                  <div key={s.label}>
-                    <div style={{
-                      fontFamily: "'Bricolage Grotesque',sans-serif",
-                      fontSize: 28, fontWeight: 800,
-                      color: CARBON, lineHeight: 1,
-                    }}>
-                      <CountUp
-                        from={0}
-                        to={s.number}
-                        suffix={s.suffix}
-                        duration={1.8}
-                      />
-                    </div>
-                    <div style={{
-                      fontFamily: "'Inter',sans-serif",
-                      fontSize: 12.5, color: SLATE, marginTop: 4,
-                    }}>
-                      {s.label}
-                    </div>
-                  </div>
+              </span>
+              <span className="hero__name-l2" aria-hidden="true">
+                {line2Chars.map((ch, idx) => (
+                  <span
+                    key={`l2-${idx}`}
+                    className="ch"
+                    style={{ '--ci': line1Chars.length + idx } as React.CSSProperties}
+                  >
+                    {ch.trim() ? <span className="ch__i">{ch}</span> : '\u00A0'}
+                  </span>
                 ))}
-              </div>
+              </span>
+            </h1>
+
+            <p className="hero__meta" style={{ '--i': 3 } as React.CSSProperties}>
+              <span className="chip chip--ink">{heroData.roleLabel || 'Web Developer'}</span>
+              <span className="badge-wrap">
+                <span className="badge">
+                  <span className="badge__dot" aria-hidden="true"></span>
+                  {heroData.statusLabel || 'Available for new opportunities'}
+                </span>
+                <svg
+                  className="doodle doodle--circle"
+                  data-reveal suppressHydrationWarning
+                  style={{ '--i': 5 } as React.CSSProperties}
+                  viewBox="0 0 180 70"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <use href="#d-circle" />
+                </svg>
+              </span>
+              <span className="hero__place">{heroData.location || 'Indonesia'}</span>
+            </p>
+
+            <p className="hero__lede" style={{ '--i': 4 } as React.CSSProperties}>
+              {withHighlights(
+                heroData.subheadline ||
+                  siteConfig.tagline ||
+                  'I craft clean interfaces & teach computer networks by day, and **build web apps that feel alive** by night.',
+              )}
+            </p>
+
+            <p className="hero__cta" style={{ '--i': 5 } as React.CSSProperties}>
+              <a
+                className="btn btn--primary"
+                href={siteConfig.resumeUrl}
+                download={siteConfig.resumeUrl.startsWith('/') ? true : undefined}
+              >
+                {heroData.primaryCtaLabel || 'DOWNLOAD CV'}
+              </a>
+              <a className="btn btn--ghost" href={heroData.secondaryCtaHref || '#projects'}>
+                {heroData.secondaryCtaLabel || 'SEE MY WORK'}
+              </a>
+            </p>
+          </div>
+
+          <div className="hero__collage">
+            <div className="collage__photo">
+              <figure className="avatar" style={{ '--i': 1 } as React.CSSProperties}>
+                <span className="tape tape--top" aria-hidden="true"></span>
+                <img
+                  src={heroData.portrait || '/images/hero.jpeg'}
+                  width={640}
+                  height={640}
+                  alt={heroData.portraitAlt || 'Potret Mochamad Syukur'}
+                  fetchPriority="high"
+                />
+                <figcaption>{heroData.portraitMeta || 'Indonesia, 2026'}</figcaption>
+              </figure>
+              <svg
+                className="doodle doodle--spark"
+                data-reveal suppressHydrationWarning
+                style={{ '--i': 5 } as React.CSSProperties}
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <use href="#d-spark" />
+              </svg>
+              <svg
+                className="doodle doodle--spark-sm"
+                data-reveal suppressHydrationWarning
+                style={{ '--i': 6 } as React.CSSProperties}
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <use href="#d-spark-sm" />
+              </svg>
             </div>
 
-            {/* ── RIGHT: Photo card ── */}
-            <div style={{
-              flex: '1 1 280px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              position: 'relative',
-              zIndex: 10, // Menghindari FloatingIcons menutupi foto
-            }}>
-              <div style={{ position: 'relative' }}>
+            <svg
+              className="doodle doodle--arrow"
+              data-reveal suppressHydrationWarning
+              style={{ '--i': 4 } as React.CSSProperties}
+              viewBox="0 0 72 48"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <use href="#d-arrow" />
+            </svg>
 
-                {/* Portrait card */}
-                <div style={{
-                  width: 'clamp(260px, 28vw, 400px)',
-                  aspectRatio: '3/4',
-                  borderRadius: 32,
-                  overflow: 'hidden',
-                  boxShadow: '0 32px 80px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06)',
-                  opacity: mounted ? 1 : 0,
-                  transform: mounted ? 'translateY(0)' : 'translateY(24px)',
-                  transition: 'opacity 0.8s ease, transform 0.8s ease',
-                }}>
-                  {/* Gambar Hero yang ditambahkan */}
-                  <img
-                    src="/images/hero.jpeg"
-                    alt="Foto Profil Mochamad Syukur"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover'
-                    }}
-                  />
-                </div>
-
-                <ReactionWidget imageId="hero-profile" position="bottom-right" />
-
-                {/* Location badge */}
-                <div style={{
-                  position: 'absolute', top: -16, right: -20,
-                  background: LIME, padding: '10px 14px',
-                  borderRadius: 14,
-                  boxShadow: '0 6px 20px rgba(198,255,52,0.35)',
-                  opacity: mounted ? 1 : 0,
-                  transform: mounted ? 'scale(1)' : 'scale(0.8)',
-                  transition: 'opacity 0.5s ease 0.7s, transform 0.5s ease 0.7s',
-                }}>
-                  <div style={{
-                    fontFamily: "'Bricolage Grotesque',sans-serif",
-                    fontWeight: 800, fontSize: 13,
-                    color: CARBON, letterSpacing: '-0.02em',
-                  }}>
-                    🇮🇩 Indonesia
-                  </div>
-                </div>
-              </div>
+            <div className="collage__stats">
+              <aside className="statcard" style={{ '--i': 2 } as React.CSSProperties}>
+                <span className="tape tape--corner" aria-hidden="true"></span>
+                <dl className="statcard__list">
+                  {stats.map((s) => (
+                    <div className="statcard__row" key={s.label}>
+                      <dt>{s.label}</dt>
+                      <StatValue value={s.number} suffix={s.suffix || ''} />
+                    </div>
+                  ))}
+                </dl>
+              </aside>
+              <p
+                className="scrap-note"
+                data-reveal suppressHydrationWarning
+                style={{ '--i': 3 } as React.CSSProperties}
+              >
+                {heroData.note || 'ps. everything is crafted with care & detail'}
+              </p>
             </div>
           </div>
         </div>
-
-        {/* ── Scroll hint ── */}
-        <div style={{
-          position: 'absolute', bottom: 32, left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          gap: 8, opacity: 0.4, zIndex: 10,
-        }}>
-          <span style={{
-            fontFamily: "'Inter',sans-serif", fontSize: 10,
-            letterSpacing: '0.1em', color: CARBON, textTransform: 'uppercase',
-          }}>
-            Scroll
-          </span>
-          <div style={{
-            width: 1, height: 28, background: CARBON,
-            animation: 'hero-scroll-line 1.8s ease-in-out infinite',
-          }}/>
-        </div>
       </section>
+
+      {/* ============ TAPE BAND ============ */}
+      <div className="marquee" aria-hidden="true">
+        <span className="marquee__track">
+          <span className="marquee__run">
+            {(heroData.marquee && heroData.marquee.length
+              ? heroData.marquee
+              : ['Astro', 'React', 'TypeScript', 'Next.js', 'Tailwind CSS', 'Node.js', 'MikroTik MTCNA', 'Computer Network', 'UI/UX Design', 'Figma', 'PostgreSQL', 'Vercel', 'Git']
+            ).map((item) => (
+              <span key={`a-${item}`}>{item}</span>
+            ))}
+          </span>
+          <span className="marquee__run">
+            {(heroData.marquee && heroData.marquee.length
+              ? heroData.marquee
+              : ['Astro', 'React', 'TypeScript', 'Next.js', 'Tailwind CSS', 'Node.js', 'MikroTik MTCNA', 'Computer Network', 'UI/UX Design', 'Figma', 'PostgreSQL', 'Vercel', 'Git']
+            ).map((item) => (
+              <span key={`b-${item}`}>{item}</span>
+            ))}
+          </span>
+        </span>
+      </div>
     </>
   );
 }

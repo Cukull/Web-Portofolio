@@ -1,0 +1,113 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Navbar } from '../../components/layout/Navbar';
+import { siteConfig } from '../../config/site';
+import projectsSection from '../../content/singletons/projects-section.json';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+---
+
+<BaseLayout
+  title={`${project.data.title} — ${siteConfig.name}`}
+  description={project.data.description}
+  ogImage={project.data.cover || siteConfig.ogImage}
+>
+  <Navbar client:load home={false} />
+
+  <main id="main" class="project-detail">
+    <a class="project-detail__back" href="/#projects">← {projectsSection.detailBack}</a>
+
+    <header class="project-detail__head">
+      <p class="project-detail__eyebrow">{projectsSection.detailEyebrow}</p>
+      <h1 class="project-detail__title">{project.data.title}</h1>
+      <p class="project-detail__lede">{project.data.description}</p>
+
+      {project.data.technology.length > 0 && (
+        <ul class="tags">
+          {project.data.technology.map((tag) => (
+            <li>{tag}</li>
+          ))}
+        </ul>
+      )}
+
+      {(project.data.liveUrl || project.data.githubUrl) && (
+        <p class="project-detail__links">
+          {project.data.liveUrl && (
+            <a
+              class="project__link"
+              href={project.data.liveUrl}
+              target={project.data.liveUrl.startsWith('http') ? '_blank' : undefined}
+              rel={project.data.liveUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+            >
+              {projectsSection.detailLive}<span class="project__arrow" aria-hidden="true">&rarr;</span>
+            </a>
+          )}
+          {project.data.githubUrl && (
+            <a
+              class="project__link project__link--quiet"
+              href={project.data.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {projectsSection.detailRepo}
+            </a>
+          )}
+        </p>
+      )}
+    </header>
+
+    {project.data.cover && (
+      <figure class="project-detail__cover">
+        <span class="tape tape--top" aria-hidden="true"></span>
+        <img
+          src={project.data.cover}
+          width="1200"
+          height="750"
+          alt={`Screenshot dari ${project.data.title}`}
+        />
+      </figure>
+    )}
+
+    {(project.data.problem || project.data.solution || project.data.result) && (
+      <div class="project-detail__facts">
+        {project.data.problem && (
+          <section class="project-detail__fact">
+            <h2>{projectsSection.detailProblem}</h2>
+            <p>{project.data.problem}</p>
+          </section>
+        )}
+        {project.data.solution && (
+          <section class="project-detail__fact">
+            <h2>{projectsSection.detailSolution}</h2>
+            <p>{project.data.solution}</p>
+          </section>
+        )}
+        {project.data.result && (
+          <section class="project-detail__fact">
+            <h2>{projectsSection.detailResult}</h2>
+            <p>{project.data.result}</p>
+          </section>
+        )}
+      </div>
+    )}
+
+    <article class="project-detail__body">
+      <Content />
+    </article>
+  </main>
+</BaseLayout>

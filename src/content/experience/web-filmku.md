@@ -4,10 +4,9 @@ position: Asisten Dosen Jaringan Komputer
 startDate: Oktober 2025
 endDate: Mei 2026
 location: Kota Bandung, Indonesia
-type: full-time
+type: Academic
 order: 1
 ---
-Deskripsi pekerjaan dan tanggung jawab Anda di sini.
-
-- Membangun dan memelihara aplikasi web
-- Berkolaborasi dengan tim design dan product
+- Membimbing praktikum mahasiswa pada konfigurasi jaringan komputer, routing, switching, dan simulasi topologi.
+- Membangun dan memelihara modul pembelajaran interaktif serta mendampingi troubleshooting jaringan di laboratorium.
+- Berkolaborasi dengan dosen pengampu dalam evaluasi teknis, ujian praktikum, dan pengembangan materi ajar.

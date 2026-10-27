@@ -1,22 +1,43 @@
 {
   "headline": "Mochamad\nSyukur.",
-  "subheadline": "Hi, saya Syukur. Seorang Frontend Developer berbasis di Indonesia, spesialis dalam merancang antarmuka yang bersih, cepat, dan memberikan pengalaman interaktif yang bermakna.",
+  "subheadline": "I craft clean interfaces & teach computer networks by day, and **build web apps that feel alive** by night.",
   "statusLabel": "Available for work",
+  "location": "Indonesia",
+  "handIntro": "my name is",
+  "roleLabel": "Web Developer",
+  "masthead": {
+    "currentlyLabel": "Currently",
+    "currently": "USB YPKP Bandung",
+    "sinceLabel": "Since",
+    "since": "Oct 2025",
+    "focusLabel": "Focus",
+    "focus": "Frontend, Astro, Network"
+  },
+  "primaryCtaLabel": "DOWNLOAD CV",
+  "secondaryCtaLabel": "SEE MY WORK",
+  "secondaryCtaHref": "#projects",
+  "portrait": "/images/hero.jpeg",
+  "portraitAlt": "Potret Mochamad Syukur",
+  "portraitMeta": "Indonesia, 2026",
+  "note": "ps. everything is crafted with care & detail",
   "stats": [
-    {
-      "number": 2,
-      "suffix": "+",
-      "label": "Tahun Pengalaman"
-    },
-    {
-      "number": 10,
-      "suffix": "+",
-      "label": "Project Selesai"
-    },
-    {
-      "number": 5,
-      "suffix": "+",
-      "label": "Happy Clients"
-    }
+    { "number": 2, "suffix": "+", "label": "Tahun Pengalaman" },
+    { "number": 10, "suffix": "+", "label": "Project Selesai" },
+    { "number": 5, "suffix": "+", "label": "Happy Clients" }
+  ],
+  "marquee": [
+    "Astro",
+    "React",
+    "TypeScript",
+    "Next.js",
+    "Tailwind CSS",
+    "Node.js",
+    "MikroTik MTCNA",
+    "Computer Network",
+    "UI/UX Design",
+    "Figma",
+    "PostgreSQL",
+    "Vercel",
+    "Git"
   ]
 }

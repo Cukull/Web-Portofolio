@@ -1,317 +1,492 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+'use client';
+
+import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+
+export type ClickSparkEasing = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring';
+export type ClickSparkShape = 'line' | 'streak' | 'dot' | 'star';
+
+export interface ClickSparkHandle {
+  spark: (x?: number, y?: number) => void;
+}
 
 export interface ClickSparkProps {
-  sparkColor?: string;
+  sparkColor?: string | string[];
   sparkSize?: number;
   sparkRadius?: number;
   sparkCount?: number;
+  sparkWidth?: number;
   duration?: number;
-  easing?: 'linear' | 'ease-in' | 'ease-in-out' | 'ease-out' | string;
+  easing?: ClickSparkEasing;
   extraScale?: number;
-  children?: React.ReactNode;
+  shape?: ClickSparkShape;
+  randomness?: number;
+  gravity?: number;
+  spread?: number;
+  direction?: number;
+  glow?: number;
+  ring?: boolean;
+  layer?: 'front' | 'back';
+  disabled?: boolean;
+  global?: boolean;
   className?: string;
   style?: React.CSSProperties;
-  /**
-   * Jika true, ClickSpark akan aktif di seluruh layar (viewport fixed canvas)
-   * dan mendeteksi semua klik di manapun pada halaman web.
-   */
-  global?: boolean;
+  children?: React.ReactNode;
 }
 
-interface Spark {
-  x: number;
-  y: number;
-  angle: number;
-  startTime: number;
-  color: string;
-}
-
-/**
- * Mendeteksi warna spark yang kontras berdasarkan elemen yang diklik.
- * Jika yang diklik adalah tombol hijau (#C6FF34), spark otomatis berwarna hitam (#171717).
- */
-const getContrastSparkColor = (target: HTMLElement | null, defaultColor: string): string => {
-  if (!target) return defaultColor;
-
-  // 1. Cek atribut kustom data-spark-color jika ada
-  const explicitElem = target.closest('[data-spark-color]');
-  if (explicitElem) {
-    const attr = explicitElem.getAttribute('data-spark-color');
-    if (attr) return attr;
-  }
-
-  // 2. Cek apakah elemen atau parent-nya adalah tombol hijau / background hijau terang
-  let curr: HTMLElement | null = target;
-  let depth = 0;
-  while (curr && curr !== document.body && depth < 5) {
-    const styleAttr = curr.getAttribute('style')?.toLowerCase() || '';
-    if (
-      curr.id === 'hero-view-work' ||
-      curr.classList.contains('bg-accent') ||
-      curr.classList.contains('bg-lime') ||
-      styleAttr.includes('#c6ff34') ||
-      styleAttr.includes('background: #c6ff34') ||
-      styleAttr.includes('background:#c6ff34') ||
-      styleAttr.includes('#b8f020')
-    ) {
-      return '#171717'; // Hitam (Carbon) agar tidak samar
-    }
-
-    try {
-      const computedBg = window.getComputedStyle(curr).backgroundColor;
-      // rgb(198, 255, 52) untuk #C6FF34, rgb(184, 240, 32) untuk hover lime
-      if (
-        computedBg === 'rgb(198, 255, 52)' ||
-        computedBg === 'rgb(184, 240, 32)' ||
-        computedBg === 'rgba(198, 255, 52, 1)' ||
-        computedBg === 'rgba(184, 240, 32, 1)'
-      ) {
-        return '#171717'; // Hitam (Carbon)
-      }
-    } catch {
-      // Abaikan jika getComputedStyle gagal
-    }
-
-    curr = curr.parentElement;
-    depth++;
-  }
-
-  return defaultColor;
+const EASINGS: Record<ClickSparkEasing, (t: number) => number> = {
+  linear: t => t,
+  'ease-in': t => t * t,
+  'ease-out': t => 1 - Math.pow(1 - t, 3),
+  'ease-in-out': t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
+  spring: t => 1 + 2.4 * Math.pow(t - 1, 3) + 1.4 * Math.pow(t - 1, 2)
 };
 
-const ClickSpark: React.FC<ClickSparkProps> = ({
-  sparkColor = '#fff',
-  sparkSize = 10,
-  sparkRadius = 15,
-  sparkCount = 8,
-  duration = 400,
-  easing = 'ease-out',
-  extraScale = 1.0,
-  children,
-  className = '',
-  style = {},
-  global = false,
-}) => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const sparksRef = useRef<Spark[]>([]);
-  const startTimeRef = useRef<number | null>(null);
+const SHAPES: ClickSparkShape[] = ['line', 'streak', 'dot', 'star'];
+const MAX_BURSTS = 32;
+const GRAVITY = 500;
+const REDUCED_MS = 320;
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const smoothstep = (a: number, b: number, x: number) => {
+  const t = clamp((x - a) / (b - a), 0, 1);
+  return t * t * (3 - 2 * t);
+};
 
-    let resizeTimeout: ReturnType<typeof setTimeout>;
+const toColors = (value?: string | string[]) => {
+  const list = (Array.isArray(value) ? value : [value]).filter((c): c is string => Boolean(c));
+  return list.length ? list : ['#ffffff'];
+};
 
-    const resizeCanvas = () => {
-      if (global) {
-        if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-        }
-      } else {
-        const parent = canvas.parentElement;
-        if (!parent) return;
-        const { width, height } = parent.getBoundingClientRect();
-        if (canvas.width !== width || canvas.height !== height) {
-          canvas.width = width;
-          canvas.height = height;
-        }
-      }
-    };
-
-    const handleResize = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(resizeCanvas, 100);
-    };
-
-    if (global) {
-      window.addEventListener('resize', handleResize);
-      resizeCanvas();
-      return () => {
-        window.removeEventListener('resize', handleResize);
-        clearTimeout(resizeTimeout);
-      };
-    } else {
-      const parent = canvas.parentElement;
-      if (!parent) return;
-      const ro = new ResizeObserver(handleResize);
-      ro.observe(parent);
-      resizeCanvas();
-      return () => {
-        ro.disconnect();
-        clearTimeout(resizeTimeout);
-      };
-    }
-  }, [global]);
-
-  const easeFunc = useCallback(
-    (t: number) => {
-      switch (easing) {
-        case 'linear':
-          return t;
-        case 'ease-in':
-          return t * t;
-        case 'ease-in-out':
-          return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-        default:
-          return t * (2 - t);
-      }
-    },
-    [easing]
-  );
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let animationId: number;
-
-    const draw = (timestamp: number) => {
-      if (!startTimeRef.current) {
-        startTimeRef.current = timestamp;
-      }
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      sparksRef.current = sparksRef.current.filter((spark) => {
-        const elapsed = timestamp - spark.startTime;
-        if (elapsed >= duration) {
-          return false;
-        }
-
-        const progress = elapsed / duration;
-        const eased = easeFunc(progress);
-
-        const distance = eased * sparkRadius * extraScale;
-        const lineLength = sparkSize * (1 - eased);
-
-        const x1 = spark.x + distance * Math.cos(spark.angle);
-        const y1 = spark.y + distance * Math.sin(spark.angle);
-        const x2 = spark.x + (distance + lineLength) * Math.cos(spark.angle);
-        const y2 = spark.y + (distance + lineLength) * Math.sin(spark.angle);
-
-        ctx.strokeStyle = spark.color || sparkColor;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.stroke();
-
-        return true;
-      });
-
-      animationId = requestAnimationFrame(draw);
-    };
-
-    animationId = requestAnimationFrame(draw);
-
-    return () => {
-      cancelAnimationFrame(animationId);
-    };
-  }, [sparkColor, sparkSize, sparkRadius, sparkCount, duration, easeFunc, extraScale]);
-
-  // Global click listener untuk seluruh layar
-  useEffect(() => {
-    if (!global) return;
-
-    const handleGlobalClick = (e: MouseEvent) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const x = e.clientX;
-      const y = e.clientY;
-
-      const activeColor = getContrastSparkColor(e.target as HTMLElement, sparkColor);
-
-      const now = performance.now();
-      const newSparks: Spark[] = Array.from({ length: sparkCount }, (_, i) => ({
-        x,
-        y,
-        angle: (2 * Math.PI * i) / sparkCount,
-        startTime: now,
-        color: activeColor,
-      }));
-
-      sparksRef.current.push(...newSparks);
-    };
-
-    window.addEventListener('click', handleGlobalClick, { capture: true });
-    return () => {
-      window.removeEventListener('click', handleGlobalClick, { capture: true });
-    };
-  }, [global, sparkCount, sparkColor]);
-
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (global) return; // mode global ditangani oleh window listener di atas
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const activeColor = getContrastSparkColor(e.target as HTMLElement, sparkColor);
-
-    const now = performance.now();
-    const newSparks: Spark[] = Array.from({ length: sparkCount }, (_, i) => ({
-      x,
-      y,
-      angle: (2 * Math.PI * i) / sparkCount,
-      startTime: now,
-      color: activeColor,
-    }));
-
-    sparksRef.current.push(...newSparks);
-  };
-
-  if (global) {
-    return (
-      <canvas
-        ref={canvasRef}
-        className={className}
-        style={{
-          width: '100vw',
-          height: '100vh',
-          display: 'block',
-          userSelect: 'none',
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          pointerEvents: 'none',
-          zIndex: 99999,
-          ...style,
-        }}
-      />
+const starPath = (
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radius: number,
+  rotation: number
+) => {
+  const pinch = radius * 0.16;
+  ctx.beginPath();
+  ctx.moveTo(x + Math.cos(rotation) * radius, y + Math.sin(rotation) * radius);
+  for (let i = 1; i <= 4; i++) {
+    const a = rotation + (i * Math.PI) / 2;
+    const mid = a - Math.PI / 4;
+    ctx.quadraticCurveTo(
+      x + Math.cos(mid) * pinch,
+      y + Math.sin(mid) * pinch,
+      x + Math.cos(a) * radius,
+      y + Math.sin(a) * radius
     );
   }
-
-  return (
-    <div
-      className={className}
-      style={{
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        ...style,
-      }}
-      onClick={handleClick}
-    >
-      <canvas
-        ref={canvasRef}
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'block',
-          userSelect: 'none',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          pointerEvents: 'none',
-          zIndex: 999,
-        }}
-      />
-      {children}
-    </div>
-  );
+  ctx.closePath();
 };
+
+const channels = (ctx: CanvasRenderingContext2D, color: string): [number, number, number] => {
+  ctx.fillStyle = color;
+  const normal = String(ctx.fillStyle);
+  const hex = /^#([0-9a-f]{6})$/i.exec(normal);
+  if (hex) {
+    const value = parseInt(hex[1], 16);
+    return [(value >> 16) & 255, (value >> 8) & 255, value & 255];
+  }
+  const rgb = /^rgba?\(([^)]+)\)$/i.exec(normal);
+  if (rgb) {
+    const parts = rgb[1]
+      .split(',')
+      .slice(0, 3)
+      .map(part => parseFloat(part));
+    return [parts[0] || 0, parts[1] || 0, parts[2] || 0];
+  }
+  return [0, 0, 0];
+};
+
+const ClickSpark = forwardRef<ClickSparkHandle, ClickSparkProps>(
+  (
+    {
+      sparkColor = '#fff',
+      sparkSize = 14,
+      sparkRadius = 30,
+      sparkCount = 8,
+      sparkWidth = 2,
+      duration = 500,
+      easing = 'ease-out',
+      extraScale = 1,
+      shape = 'line',
+      randomness = 0.2,
+      gravity = 0,
+      spread = 360,
+      direction = 0,
+      glow = 0,
+      ring = false,
+      layer = 'front',
+      disabled = false,
+      global = false,
+      className = '',
+      style,
+      children
+    },
+    ref
+  ) => {
+    const rootRef = useRef<HTMLDivElement | null>(null);
+    const layerRef = useRef<HTMLSpanElement | null>(null);
+    const engineRef = useRef<ClickSparkHandle | null>(null);
+
+    const settings = {
+      colors: toColors(sparkColor),
+      size: Math.max(0, sparkSize),
+      radius: Math.max(0, sparkRadius) * Math.max(0, extraScale),
+      count: clamp(Math.round(sparkCount), 1, 64),
+      width: Math.max(0.5, sparkWidth),
+      duration: Math.max(60, duration),
+      ease: EASINGS[easing] ?? EASINGS['ease-out'],
+      shape: SHAPES.includes(shape) ? shape : 'line',
+      randomness: clamp(randomness, 0, 1),
+      gravity: Math.max(0, gravity),
+      spread: clamp(spread, 0, 360),
+      direction,
+      glow: clamp(glow, 0, 1),
+      ring,
+      disabled
+    };
+    const settingsRef = useRef(settings);
+    settingsRef.current = settings;
+
+    useEffect(() => {
+      const root = rootRef.current;
+      const layerEl = layerRef.current;
+      if (!root || !layerEl) return;
+
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const bursts: any[] = [];
+      let raf = 0;
+      let lastPress = { time: -1e9, x: 0, y: 0 };
+
+      const drop = (s: typeof settings, seconds: number) => 0.5 * s.gravity * GRAVITY * seconds * seconds;
+
+      const position = (burst: any, spark: any, distance: number, seconds: number) => [
+        burst.x + Math.cos(spark.angle) * distance,
+        burst.y + Math.sin(spark.angle) * distance + drop(burst.settings, seconds)
+      ];
+
+      const drawSpark = (ctx: CanvasRenderingContext2D, burst: any, spark: any, elapsed: number) => {
+        const s = burst.settings;
+        const life = reduced ? REDUCED_MS : s.duration * spark.life;
+        const p = elapsed / life;
+        if (p >= 1) return false;
+        const e = reduced ? 0.55 : s.ease(clamp(p, 0, 1));
+        const seconds = reduced ? 0 : elapsed / 1000;
+        const distance = s.radius * spark.reach * e;
+        const width = s.width * spark.scale;
+        const fade = reduced ? 1 - p : 1 - smoothstep(s.shape === 'line' ? 0.55 : 0.7, 1, p);
+        if (fade <= 0) return true;
+        ctx.strokeStyle = spark.color;
+        ctx.fillStyle = spark.color;
+
+        if (s.shape === 'line') {
+          const length = s.size * spark.scale * (reduced ? 0.5 : Math.pow(1 - p, 1.6));
+          const [x1, y1] = position(burst, spark, distance, seconds);
+          const [x2, y2] = position(burst, spark, distance + Math.max(0.01, length), seconds);
+          ctx.lineCap = 'round';
+          if (spark.glow > 0) {
+            ctx.globalAlpha = fade * 0.14 * spark.glow;
+            ctx.lineWidth = width * 4.5;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+          }
+          ctx.globalAlpha = fade;
+          ctx.lineWidth = width;
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+          return true;
+        }
+
+        if (s.shape === 'streak') {
+          const lag = reduced ? 0 : Math.min(elapsed, 70 + s.size * 4 * spark.scale);
+          const back = reduced ? 0.4 : s.ease(clamp((elapsed - lag) / life, 0, 1));
+          const [hx, hy] = position(burst, spark, distance, seconds);
+          const [tx, ty] = position(burst, spark, s.radius * spark.reach * back, Math.max(0, seconds - lag / 1000));
+          const dx = hx - tx;
+          const dy = hy - ty;
+          const length = Math.hypot(dx, dy) || 1;
+          const nx = (-dy / length) * width * 0.5;
+          const ny = (dx / length) * width * 0.5;
+          const paint = (spreadWidth: number, alpha: number) => {
+            const gradient = ctx.createLinearGradient(tx, ty, hx, hy);
+            gradient.addColorStop(0, spark.clear);
+            gradient.addColorStop(1, spark.color);
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.moveTo(tx, ty);
+            ctx.lineTo(hx + nx * spreadWidth, hy + ny * spreadWidth);
+            ctx.lineTo(hx - nx * spreadWidth, hy - ny * spreadWidth);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = spark.color;
+            ctx.beginPath();
+            ctx.arc(hx, hy, width * 0.5 * spreadWidth, 0, Math.PI * 2);
+            ctx.fill();
+          };
+          if (spark.glow > 0) paint(3.2, fade * 0.16 * spark.glow);
+          paint(1, fade);
+          return true;
+        }
+
+        if (s.shape === 'dot') {
+          const [x, y] = position(burst, spark, distance, seconds);
+          const radius = width * 1.25 * (1 - 0.5 * e);
+          if (spark.glow > 0) {
+            ctx.globalAlpha = fade * 0.18 * spark.glow;
+            ctx.beginPath();
+            ctx.arc(x, y, radius * 2.6, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.globalAlpha = fade;
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.fill();
+          return true;
+        }
+
+        const [x, y] = position(burst, spark, distance, seconds);
+        const twinkle = reduced ? 1 - p : Math.pow(Math.sin(Math.PI * clamp(p * 1.1, 0, 1)), 0.7);
+        const radius = s.size * 0.6 * spark.scale * twinkle;
+        const rotation = spark.angle + spark.spin * p * Math.PI * 0.5;
+        if (radius <= 0.05) return true;
+        if (spark.glow > 0) {
+          ctx.globalAlpha = fade * 0.2 * spark.glow;
+          ctx.beginPath();
+          ctx.arc(x, y, radius * 1.1, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = fade;
+        starPath(ctx, x, y, radius, rotation);
+        ctx.fill();
+        return true;
+      };
+
+      const drawRing = (ctx: CanvasRenderingContext2D, burst: any, elapsed: number) => {
+        const s = burst.settings;
+        const life = reduced ? REDUCED_MS : s.duration * 0.8;
+        const p = elapsed / life;
+        if (p >= 1) return false;
+        const radius = 2 + s.radius * 0.6 * (reduced ? 0.6 : EASINGS['ease-out'](p));
+        ctx.globalAlpha = Math.pow(1 - p, 2) * 0.7;
+        ctx.strokeStyle = burst.sparks[0]?.color ?? s.colors[0];
+        ctx.lineWidth = Math.max(0.5, s.width * (1 - p) * 0.9);
+        ctx.beginPath();
+        ctx.arc(burst.x, burst.y, radius, 0, Math.PI * 2);
+        ctx.stroke();
+        return true;
+      };
+
+      const remove = (burst: any) => {
+        burst.canvas.remove();
+        const index = bursts.indexOf(burst);
+        if (index >= 0) bursts.splice(index, 1);
+      };
+
+      const frame = (now: number) => {
+        raf = 0;
+        for (const burst of [...bursts]) {
+          const elapsed = now - burst.start;
+          const ctx = burst.ctx;
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.clearRect(0, 0, burst.canvas.width, burst.canvas.height);
+          ctx.setTransform(burst.ratio, 0, 0, burst.ratio, -burst.left * burst.ratio, -burst.top * burst.ratio);
+          let alive = false;
+          if (burst.settings.ring && drawRing(ctx, burst, elapsed)) alive = true;
+          for (const spark of burst.sparks) {
+            if (drawSpark(ctx, burst, spark, elapsed)) alive = true;
+          }
+          ctx.globalAlpha = 1;
+          if (!alive) remove(burst);
+        }
+        if (bursts.length) raf = requestAnimationFrame(frame);
+      };
+
+      const spawn = (clientX: number, clientY: number) => {
+        const s = settingsRef.current;
+        if (s.disabled) return;
+        const rect = global ? { left: 0, top: 0 } : root.getBoundingClientRect();
+        const offset = Math.floor(Math.random() * s.colors.length);
+        const full = s.spread >= 359.5;
+        const arc = (s.spread * Math.PI) / 180;
+        const heading = ((s.direction - 90) * Math.PI) / 180;
+        const step = full ? (Math.PI * 2) / s.count : s.count > 1 ? arc / (s.count - 1) : 0;
+        const sparks = Array.from({ length: s.count }, (_, i) => {
+          const base = full ? heading + step * i : s.count > 1 ? heading - arc / 2 + step * i : heading;
+          const jitter = (Math.random() - 0.5) * s.randomness;
+          return {
+            angle: base + jitter * (step || arc || 1) * 0.9,
+            reach: 1 + (Math.random() - 0.5) * 0.7 * s.randomness,
+            scale: 1 + (Math.random() - 0.5) * 0.8 * s.randomness,
+            life: 1 + (Math.random() - 0.5) * 0.5 * s.randomness,
+            spin: Math.random() - 0.5,
+            color: s.colors[(i + offset) % s.colors.length],
+            clear: '',
+            glow: 0
+          };
+        });
+        const longest = s.duration * (1 + 0.25 * s.randomness);
+        const fall = drop(s, longest / 1000);
+        const reach =
+          s.radius * (1 + 0.35 * s.randomness) * (s.ease === EASINGS.spring ? 1.15 : 1) +
+          s.size * (1 + 0.4 * s.randomness) +
+          s.width * (s.glow > 0 ? 6 : 2) +
+          6;
+        const box = {
+          left: Math.max(clientX - reach, 0),
+          top: Math.max(clientY - reach, 0),
+          right: Math.min(clientX + reach, window.innerWidth),
+          bottom: Math.min(clientY + reach + fall, window.innerHeight)
+        };
+        if (box.right - box.left < 1 || box.bottom - box.top < 1) return;
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.ceil((box.right - box.left) * ratio);
+        canvas.height = Math.ceil((box.bottom - box.top) * ratio);
+        Object.assign(canvas.style, {
+          position: 'absolute',
+          left: `${box.left - rect.left}px`,
+          top: `${box.top - rect.top}px`,
+          width: `${box.right - box.left}px`,
+          height: `${box.bottom - box.top}px`,
+          display: 'block',
+          pointerEvents: 'none'
+        });
+        canvas.setAttribute('aria-hidden', 'true');
+        layerEl.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          canvas.remove();
+          return;
+        }
+        for (const spark of sparks) {
+          const [r, g, b] = channels(ctx, spark.color);
+          spark.clear = `rgba(${r}, ${g}, ${b}, 0)`;
+          spark.glow = s.glow * (0.35 + 0.65 * ((0.2126 * r + 0.7152 * g + 0.0722 * b) / 255));
+        }
+        bursts.push({
+          x: clientX,
+          y: clientY,
+          start: performance.now(),
+          sparks,
+          settings: { ...s },
+          canvas,
+          ctx,
+          ratio,
+          left: box.left,
+          top: box.top
+        });
+        while (bursts.length > MAX_BURSTS) remove(bursts[0]);
+        if (!raf) raf = requestAnimationFrame(frame);
+      };
+
+      const onPointerDown = (event: PointerEvent) => {
+        if (event.pointerType !== 'mouse' || event.button !== 0) return;
+        lastPress = { time: performance.now(), x: event.clientX, y: event.clientY };
+        spawn(event.clientX, event.clientY);
+      };
+
+      const onClick = (event: MouseEvent) => {
+        if ('pointerType' in event && (event as PointerEvent).pointerType === 'mouse') return;
+        if (event.detail === 0) {
+          const target = event.target instanceof Element ? event.target : root;
+          const rect = target.getBoundingClientRect();
+          spawn(rect.left + rect.width / 2, rect.top + rect.height / 2);
+          return;
+        }
+        const recent =
+          performance.now() - lastPress.time < 700 &&
+          Math.hypot(event.clientX - lastPress.x, event.clientY - lastPress.y) < 12;
+        if (!recent) spawn(event.clientX, event.clientY);
+      };
+
+      const eventTarget: HTMLElement | Window = global ? window : root;
+      eventTarget.addEventListener('pointerdown', onPointerDown as EventListener);
+      eventTarget.addEventListener('click', onClick as EventListener);
+
+      engineRef.current = {
+        spark: (x?: number, y?: number) => {
+          const rect = global
+            ? { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight }
+            : root.getBoundingClientRect();
+          spawn(rect.left + (x ?? rect.width / 2), rect.top + (y ?? rect.height / 2));
+        }
+      };
+
+      return () => {
+        cancelAnimationFrame(raf);
+        eventTarget.removeEventListener('pointerdown', onPointerDown as EventListener);
+        eventTarget.removeEventListener('click', onClick as EventListener);
+        for (const burst of [...bursts]) remove(burst);
+        engineRef.current = null;
+      };
+    }, [global]);
+
+    useImperativeHandle(
+      ref,
+      () => ({
+        spark: (x?: number, y?: number) => engineRef.current?.spark(x, y)
+      }),
+      []
+    );
+
+    if (global && !children) {
+      return (
+        <div
+          ref={rootRef}
+          className={className}
+          aria-hidden="true"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            pointerEvents: 'none',
+            zIndex: 99999,
+            ...style
+          }}
+        >
+          <span
+            ref={layerRef}
+            aria-hidden="true"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              overflow: 'visible',
+              pointerEvents: 'none'
+            }}
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div
+        ref={rootRef}
+        className={className}
+        style={{ position: 'relative', width: '100%', height: '100%', isolation: 'isolate', ...style }}
+      >
+        {children}
+        <span
+          ref={layerRef}
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: layer === 'back' ? -1 : 1,
+            overflow: 'visible',
+            pointerEvents: 'none'
+          }}
+        />
+      </div>
+    );
+  }
+);
+
+ClickSpark.displayName = 'ClickSpark';
 
 export default ClickSpark;

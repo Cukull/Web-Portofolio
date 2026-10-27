@@ -1,16 +1,18 @@
 ---
 /**
- * index.astro — Halaman Utama
- * Urutan section: Hero → About → Skills → Projects → Experience → Contact → Footer
+ * index.astro — Halaman Utama (Retro Digital Notebook / Paper Graph)
+ * Urutan section persis seperti gambar referensi (faquloh.site/classic.html):
+ *  Cover (Hero) → 01 about me! → 02 WHERE I'VE WORKED → 03 MADE THINGS →
+ *  04 what I reach for → 05 EDUCATION & AWARDS → 06 CERTIFICATES →
+ *  07 off the clock → Contact / Footer Card
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { Navbar } from '../components/layout/Navbar';
-import Footer from '../components/layout/Footer.astro';
 import Hero from '../components/sections/Hero';
 import About from '../components/sections/About.astro';
-import Skills from '../components/sections/Skills.astro';
-import FeaturedProjects from '../components/sections/FeaturedProjects.astro';
 import Experience from '../components/sections/Experience.astro';
+import FeaturedProjects from '../components/sections/FeaturedProjects.astro';
+import Skills from '../components/sections/Skills.astro';
 import Certificates from '../components/sections/Certificates.astro';
 import Contact from '../components/sections/Contact.astro';
 ---
@@ -18,15 +20,14 @@ import Contact from '../components/sections/Contact.astro';
 <BaseLayout>
   <Navbar client:load />
 
-  <main id="main" tabindex="-1">
+  <main id="main" class="home" tabindex="-1">
     <Hero client:load />
     <About />
-    <Skills />
-    <FeaturedProjects />
     <Experience />
+    <FeaturedProjects />
+    <Skills />
     <Certificates />
-    <Contact />
   </main>
 
-  <Footer />
+  <Contact />
 </BaseLayout>

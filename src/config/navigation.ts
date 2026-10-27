@@ -1,13 +1,9 @@
 /**
  * Navigation Configuration
- * Daftar item di navbar.
- * Setiap item: label tampilan + href anchor ke section.
+ * Daftar item navbar sekarang berasal dari Site Settings di Keystatic.
  */
-export const navItems = [
-  { label: 'About',      href: '#about'      },
-  { label: 'Projects',   href: '#projects'   },
-  { label: 'Experience', href: '#experience' },
-  { label: 'Contact',    href: '#contact'    },
-] as const;
+import siteData from '../content/singletons/site.json';
 
-export type NavItem = typeof navItems[number];
+export const navItems = siteData.navigation;
+
+export type NavItem = (typeof navItems)[number];

@@ -1,100 +1,43 @@
 ---
 /**
- * About.astro — editorial layout.
- * Foto besar kiri, cerita + stats kanan.
- * Tidak bergantung pada komponen eksternal.
+ * About.astro — Section 01: "about me!"
+ * Seluruh isi berasal dari singleton About (Keystatic).
  */
-
-import CountUp from '../ui/CountUp';
-import CircularTestimonials from '../ui/circular-testimonials';
-
-// Fetch data from CMS (Keystatic Singleton)
 import aboutData from '../../content/singletons/about.json';
 
-const { sectionLabel, stats, testimonials } = aboutData;
+const tilts = ['-2.2deg', '1.4deg', '-1deg', '2deg', '-1.6deg', '1.1deg', '-2.4deg', '1.8deg', '-1.2deg', '2.2deg'];
 ---
 
-<section
-  id="about"
-  aria-labelledby="about-heading"
-  style="background:#FAFAF7;padding:120px 0;"
->
-  <div style="max-width:1440px;margin:0 auto;padding:0 clamp(1.25rem,4vw,4rem);">
-    <div class="reveal-on-scroll" style="display:flex;flex-direction:column;gap:4rem;">
-      <!-- Section label -->
-      <div style="display:flex;flex-direction:column;gap:2rem;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#707070;letter-spacing:0.1em;text-transform:uppercase;">
-            {sectionLabel}
-          </span>
-          <div style="width:60px;height:1px;background:#EAEAEA;"></div>
-        </div>
-      </div>
+<section class="about" id="about">
+  <h2 class="hand-title" data-reveal>{aboutData.heading || 'about me!'}</h2>
+  <svg class="doodle doodle--squiggle" data-reveal style="--i:2" viewBox="0 0 120 12" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <use href="#d-squiggle"/>
+  </svg>
+  <svg class="doodle doodle--cross" data-reveal style="--i:6" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+    <use href="#d-cross"/>
+  </svg>
 
-      <!-- Content Area: Testimonials (Left) & Vertical Stats (Right) -->
-      <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:4rem; width:100%;">
-        
-        <!-- Circular Testimonials -->
-        <div style="flex:1; min-width:min(100%, 600px); margin-left:-2rem;">
-          <CircularTestimonials 
-            client:visible 
-            testimonials={testimonials}
-            colors={{
-              name: "#171717",
-              designation: "#707070",
-              testimony: "#171717",
-              arrowBackground: "#FFFFFF",
-              arrowForeground: "#171717",
-              arrowHoverBackground: "#C6FF34",
-            }}
-            fontSizes={{
-              name: "1.5rem",
-              designation: "0.9375rem",
-              quote: "1.25rem",
-            }}
-          />
-        </div>
+  <div class="about__grid">
+    <div class="about__note" data-reveal style="--i:1">
+      <p class="about__lead">{aboutData.lead}</p>
+      {(aboutData.paragraphs || []).map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+      <p class="about__hand">{aboutData.handNote}</p>
+    </div>
 
-        <!-- Vertical Stats -->
-        <div style="display:flex; flex-direction:column; gap:3rem; width:220px; flex-shrink:0;">
-          <div style="display:flex; flex-direction:column; gap:2.5rem;">
-            {stats.map(({ number, suffix, label }) => (
-              <div style="border-left: 2px solid #EAEAEA; padding-left: 1.25rem;">
-                <p style="font-family:'Bricolage Grotesque',sans-serif;font-size:2.5rem;font-weight:800;color:#171717;line-height:1;margin:0 0 8px;">
-                  <CountUp
-                    client:visible
-                    from={0}
-                    to={number}
-                    suffix={suffix}
-                    duration={1.8}
-                  />
-                </p>
-                <p style="font-family:'Inter',sans-serif;font-size:0.875rem;color:#707070;margin:0;">{label}</p>
-              </div>
+    <div class="about__skills" data-reveal style="--i:2">
+      {(aboutData.skillGroups || []).map((group, groupIndex) => (
+        <div class:list={['skillcard', groupIndex === 1 && 'skillcard--alt']}>
+          {groupIndex === 0 && <span class="tape tape--top" aria-hidden="true"></span>}
+          <h3 class="skillcard__title">{group.title}</h3>
+          <ul class="skills">
+            {(group.items || []).map((item, itemIndex) => (
+              <li class="skills__item" style={`--tilt:${tilts[itemIndex % tilts.length]}`}>{item}</li>
             ))}
-          </div>
-
-          <!-- Location -->
-          <p style="display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:0.875rem;color:#707070;margin:0;padding-left:1.25rem;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-              <circle cx="12" cy="10" r="3"/>
-            </svg>
-            Indonesia
-          </p>
+          </ul>
         </div>
-      </div>
+      ))}
     </div>
   </div>
 </section>
-
-<style is:global>
-  @media (max-width: 768px) {
-    .about-layout {
-      grid-template-columns: 1fr !important;
-    }
-    .about-content {
-      order: -1;
-    }
-  }
-</style>

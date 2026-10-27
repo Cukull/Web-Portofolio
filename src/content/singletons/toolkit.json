@@ -1,0 +1,31 @@
+{
+  "heading": "what I reach for",
+  "lede": "Mostly when crafting web interfaces or setting up network topologies.",
+  "groups": [
+    {
+      "label": "AI agents, design & network",
+      "items": [
+        { "name": "OpenCode", "use": "Terminal-first AI coding agent" },
+        { "name": "Claude & Gemini", "use": "Pair programming & architecture review" },
+        { "name": "Figma", "use": "UI/UX wireframing & design systems" },
+        { "name": "WinBox", "use": "MikroTik router & network configuration" },
+        { "name": "Keystatic", "use": "Git-based CMS for content management" }
+      ]
+    },
+    {
+      "label": "Editors, languages & shipping",
+      "items": [
+        { "name": "VS Code", "use": "Daily driver code editor" },
+        { "name": "Astro", "use": "Zero-JS-by-default web framework" },
+        { "name": "React & Next.js", "use": "Interactive UI islands & fullstack apps" },
+        { "name": "TypeScript", "use": "Type-safe logic across projects" },
+        { "name": "Tailwind CSS", "use": "Utility styling & custom design tokens" },
+        { "name": "Node.js & PHP", "use": "Backend APIs & server-side scripting" },
+        { "name": "MySQL & Postgres", "use": "Relational database design" },
+        { "name": "Vercel & GitHub", "use": "Version control & instant deployment" }
+      ]
+    }
+  ],
+  "handNote": "yes, mostly VS Code & terminal",
+  "stickyNote": "this list evolves every semester"
+}

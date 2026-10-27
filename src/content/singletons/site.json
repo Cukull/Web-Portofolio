@@ -1,0 +1,43 @@
+{
+  "name": "Mochamad Syukur",
+  "shortName": "SYUKUR PORTFOLIO",
+  "title": "Mochamad Syukur — Web Developer & Network Enthusiast in Indonesia",
+  "loaderText": "LOADING",
+  "tagline": "Membangun aplikasi web yang rapi di siang hari, dan mengeksplorasi teknologi baru di malam hari.",
+  "description": "Portfolio pribadi Mochamad Syukur — Web Developer & mahasiswa Ilmu Komputer di Bandung, Indonesia yang fokus pada kualitas UI, jaringan komputer, dan performa web.",
+  "url": "https://mochamad-syukur.dev",
+  "ogImage": "/images/hero.jpeg",
+  "author": {
+    "name": "Mochamad Syukur",
+    "jobTitle": "Web Developer",
+    "location": "Bandung, Indonesia"
+  },
+  "social": {
+    "github": "https://github.com/Cukull",
+    "linkedin": "https://linkedin.com/in/msyukur",
+    "instagram": "https://instagram.com/msyukur",
+    "emailAddress": "mochamadsyukur@gmail.com"
+  },
+  "resumeFile": null,
+  "resumeUrl": "/cv.pdf",
+  "music": {
+    "src": "/audio/the-reason.mp3",
+    "title": "The Reason",
+    "artist": "Sabrina",
+    "playingLabel": "playing",
+    "pausedLabel": "paused",
+    "volume": 0.35,
+    "autoplay": true
+  },
+  "navigation": [
+    { "label": "HOME", "href": "#top" },
+    { "label": "ABOUT", "href": "#about" },
+    { "label": "EXPERIENCE", "href": "#experience" },
+    { "label": "PROJECTS", "href": "#projects" },
+    { "label": "TOOLS", "href": "#toolkit" },
+    { "label": "EDUCATION", "href": "#education" },
+    { "label": "CERTIFICATES", "href": "#certificates" },
+    { "label": "OFF CLOCK", "href": "#off-clock" },
+    { "label": "CONTACT", "href": "#contact" }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "heading": "let's build something",
+  "lede": "Open to new roles, freelance projects, and collaborations.",
+  "stickyNote": "usually replies the same day",
+  "finePrint": "© {year} {name}. Hand-crafted with Astro, React, and CSS on 28px graph paper.",
+  "form": {
+    "nameLabel": "YOUR NAME",
+    "namePlaceholder": "John Doe",
+    "emailLabel": "YOUR EMAIL",
+    "emailPlaceholder": "john@example.com",
+    "messageLabel": "NOTE / PROJECT IDEA",
+    "messagePlaceholder": "Write a quick note on this sheet...",
+    "submitLabel": "SEND NOTE",
+    "sendingLabel": "SENDING...",
+    "cvLabel": "DOWNLOAD CV",
+    "successMessage": "✓ Email app opened — hit send.",
+    "copyLabel": "COPY",
+    "copiedLabel": "copied!"
+  },
+  "socialLabels": {
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "instagram": "Instagram",
+    "email": "Email"
+  }
+}

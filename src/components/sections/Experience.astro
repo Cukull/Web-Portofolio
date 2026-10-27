@@ -1,179 +1,59 @@
 ---
 /**
- * Experience.astro
- * Design dari referensi: "Where I've been." — 2 kolom Work | Education
- * Timeline dots lime, kartu minimal, tags lime pill.
+ * Experience.astro — Section 02: "WHERE I'VE WORKED"
+ * Entries + bullet points berasal dari collection Experience (Keystatic).
  */
+import { getCollection, render } from 'astro:content';
+import experienceSection from '../../content/singletons/experience-section.json';
 
-const CARBON = '#171717';
+const entries = (await getCollection('experience')).sort(
+  (a, b) => (a.data.order || 0) - (b.data.order || 0),
+);
 
-const LIME   = '#C6FF34';
-const SLATE  = '#707070';
-const BORDER = '#EAEAEA';
-const CREAM  = '#F5F5F0';
+const items = await Promise.all(
+  entries.map(async (entry) => {
+    const { Content } = await render(entry);
+    return {
+      when: `${entry.data.startDate} — ${entry.data.endDate || experienceSection.presentLabel || 'Present'}`,
+      role: entry.data.position,
+      org: entry.data.company,
+      location: entry.data.location,
+      type: entry.data.type,
+      Content,
+    };
+  }),
+);
 
-const expFiles = Object.values(import.meta.glob('../../content/experience/*.md', { eager: true })) as any[];
-const experience = expFiles
-  .sort((a, b) => (a.frontmatter.order || 0) - (b.frontmatter.order || 0))
-  .map(p => ({
-    id: p.url || p.file.split('/').pop().replace('.md', ''),
-    company: p.frontmatter.company || 'Unknown',
-    role: p.frontmatter.position || '',
-    period: `${p.frontmatter.startDate || ''} — ${p.frontmatter.endDate || 'Present'}`,
-    description: p.frontmatter.location ? `${p.frontmatter.location} - ${p.frontmatter.type}` : '',
-    tags: [p.frontmatter.type].filter(Boolean),
-    current: (p.frontmatter.endDate || '').toLowerCase() === 'present' || !p.frontmatter.endDate,
-  }));
-
-const eduFiles = Object.values(import.meta.glob('../../content/education/*.md', { eager: true })) as any[];
-const education = eduFiles
-  .sort((a, b) => (a.frontmatter.order || 0) - (b.frontmatter.order || 0))
-  .map(p => ({
-    id: p.url || p.file.split('/').pop().replace('.md', ''),
-    institution: p.frontmatter.institution || 'Unknown',
-    degree: p.frontmatter.degree || '',
-    period: `${p.frontmatter.startDate || ''} — ${p.frontmatter.endDate || ''}`,
-    description: p.frontmatter.field || '',
-    tags: [],
-  }));
+const tilts = ['-0.5deg', '0.5deg', '-0.4deg', '0.4deg'];
 ---
 
-<section
-  id="experience"
-  aria-labelledby="experience-heading"
-  style="background:#FAFAF7;padding:120px 0;"
->
-  <div class="reveal-on-scroll" style="max-width:1440px;margin:0 auto;padding:0 clamp(1.25rem,4vw,4rem);">
+<section class="experience" id="experience">
+  <h2 class="pixel section-title" data-reveal>{experienceSection.heading}</h2>
+  <svg class="doodle doodle--star" data-reveal style="--i:1" viewBox="0 0 26 26" aria-hidden="true" focusable="false">
+    <use href="#d-star"/>
+  </svg>
+  <p class="scrap-note scrap-note--rail" data-reveal style="--i:1">{experienceSection.railNote}</p>
 
-    <!-- Section label -->
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
-      <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#707070;letter-spacing:0.1em;text-transform:uppercase;">
-        Experience &amp; Education
-      </span>
-      <div style="width:80px;height:1px;background:#EAEAEA;"></div>
-    </div>
-
-    <!-- Heading -->
-    <div id="experience-heading" style="margin:0 0 64px;">
-      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(36px,3vw,52px);font-weight:800;color:#171717;letter-spacing:-0.03em;line-height:1.1;margin:0;">
-        Where I've been.
-      </h2>
-    </div>
-
-    <!-- Two-column grid -->
-    <div class="exp-two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:3rem 5rem;">
-
-      <!-- WORK column -->
-      <div>
-        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:700;color:#171717;letter-spacing:-0.02em;margin:0 0 32px;display:flex;align-items:center;gap:10px;">
-          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#C6FF34;flex-shrink:0;"></span>
-          Work
-        </h3>
-        <div>
-          {experience.map((item, i) => (
-            <div
-              class="tl-item reveal-on-scroll"
-              style={`display:flex;gap:20px;padding-bottom:${i < experience.length-1 ? '40px' : '0'};position:relative;`}
-            >
-              <!-- Dot + line -->
-              <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:20px;">
-                <div style={`width:12px;height:12px;border-radius:50%;background:#C6FF34;border:3px solid #FAFAF7;box-shadow:0 0 0 2px #C6FF34;flex-shrink:0;margin-top:4px;`}></div>
-                {i < experience.length - 1 && (
-                  <div style="flex:1;width:2px;background:linear-gradient(to bottom,#C6FF34,rgba(198,255,52,0.12));margin-top:6px;"></div>
-                )}
-              </div>
-
-              <!-- Content -->
-              <div style="flex:1;padding-bottom:8px;">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:4px;flex-wrap:wrap;">
-                  <div>
-                    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:19px;font-weight:700;color:#171717;letter-spacing:-0.02em;line-height:1.2;">
-                      {item.company}
-                    </div>
-                    <div style="font-family:'Inter',sans-serif;font-size:14px;font-weight:500;color:#707070;margin-top:3px;">
-                      {item.role}
-                    </div>
-                  </div>
-                  <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:#707070;background:#F5F5F0;border:1px solid #EAEAEA;padding:4px 10px;border-radius:100px;white-space:nowrap;flex-shrink:0;">
-                    {item.period}
-                  </span>
-                </div>
-                <p style="font-family:'Inter',sans-serif;font-size:14px;line-height:1.7;color:#707070;margin:8px 0 12px;">
-                  {item.description}
-                </p>
-                <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                  {item.tags.map(tag => (
-                    <span style="font-family:'Inter',sans-serif;font-size:11.5px;font-weight:500;color:#2D4A0A;background:rgba(198,255,52,0.12);border:1px solid rgba(198,255,52,0.35);padding:3px 10px;border-radius:100px;">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
+  <ol class="timeline">
+    {items.map((item, idx) => {
+      const Content = item.Content;
+      return (
+        <li class="timeline__item" data-reveal style={`--i:${idx}`}>
+          <div>
+            <p class="timeline__when">{item.when}</p>
+            {item.location && <p class="timeline__where">{item.location}</p>}
+          </div>
+          <div class="timeline__card" style={`--tilt:${tilts[idx % tilts.length]}`}>
+            {idx === 0 && <span class="tape tape--top" aria-hidden="true"></span>}
+            <h3 class="timeline__role">{item.role}</h3>
+            <p class="timeline__org">{item.org}</p>
+            {item.type && <p class="timeline__meta">{item.type}</p>}
+            <div class="timeline__body">
+              <Content />
             </div>
-          ))}
-        </div>
-      </div>
-
-      <!-- EDUCATION column -->
-      <div>
-        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:700;color:#171717;letter-spacing:-0.02em;margin:0 0 32px;display:flex;align-items:center;gap:10px;">
-          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#C6FF34;flex-shrink:0;"></span>
-          Education
-        </h3>
-        <div>
-          {education.map((item, i) => (
-            <div
-              class="tl-item reveal-on-scroll"
-              style={`display:flex;gap:20px;padding-bottom:${i < education.length-1 ? '40px' : '0'};position:relative;`}
-            >
-              <!-- Dot + line -->
-              <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:20px;">
-                <div style="width:12px;height:12px;border-radius:50%;background:#C6FF34;border:3px solid #FAFAF7;box-shadow:0 0 0 2px #C6FF34;flex-shrink:0;margin-top:4px;"></div>
-                {i < education.length - 1 && (
-                  <div style="flex:1;width:2px;background:linear-gradient(to bottom,#C6FF34,rgba(198,255,52,0.12));margin-top:6px;"></div>
-                )}
-              </div>
-
-              <!-- Content -->
-              <div style="flex:1;padding-bottom:8px;">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:4px;flex-wrap:wrap;">
-                  <div>
-                    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:19px;font-weight:700;color:#171717;letter-spacing:-0.02em;line-height:1.2;">
-                      {item.institution}
-                    </div>
-                    <div style="font-family:'Inter',sans-serif;font-size:14px;font-weight:500;color:#707070;margin-top:3px;">
-                      {item.degree}
-                    </div>
-                  </div>
-                  <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:#707070;background:#F5F5F0;border:1px solid #EAEAEA;padding:4px 10px;border-radius:100px;white-space:nowrap;flex-shrink:0;">
-                    {item.period}
-                  </span>
-                </div>
-                <p style="font-family:'Inter',sans-serif;font-size:14px;line-height:1.7;color:#707070;margin:8px 0 12px;">
-                  {item.description}
-                </p>
-                <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                  {item.tags.map(tag => (
-                    <span style="font-family:'Inter',sans-serif;font-size:11.5px;font-weight:500;color:#2D4A0A;background:rgba(198,255,52,0.12);border:1px solid rgba(198,255,52,0.35);padding:3px 10px;border-radius:100px;">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-    </div>
-  </div>
+          </div>
+        </li>
+      );
+    })}
+  </ol>
 </section>
-
-<style is:global>
-  @media (max-width: 900px) {
-    .exp-two-col {
-      grid-template-columns: 1fr !important;
-      gap: 3rem !important;
-    }
-  }
-</style>

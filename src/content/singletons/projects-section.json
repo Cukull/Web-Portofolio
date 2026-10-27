@@ -1,0 +1,16 @@
+{
+  "heading": "MADE THINGS",
+  "filterAll": "ALL",
+  "filterModern": "ASTRO & REACT",
+  "filterVanilla": "WEB & NETWORK",
+  "emptyText": "Nothing filed under that tab yet. Pick another one.",
+  "cardVisit": "VISIT SITE",
+  "cardDetails": "MORE DETAILS",
+  "detailEyebrow": "PROJECT CASE STUDY",
+  "detailBack": "BACK TO PROJECTS",
+  "detailProblem": "Problem",
+  "detailSolution": "Solution",
+  "detailResult": "Result",
+  "detailLive": "VISIT SITE",
+  "detailRepo": "VIEW REPOSITORY"
+}

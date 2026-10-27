@@ -21,10 +21,9 @@ const projects = defineCollection({
     technology: z.array(z.string()),
     liveUrl: z.string().url().optional(),
     githubUrl: z.string().url().optional(),
-    cover: z.string(),
+    cover: z.string().optional(),
     featured: z.boolean().default(false),
     order: z.number().default(99),
-    publishDate: z.date().optional(),
   }),
 });
 
@@ -35,9 +34,11 @@ const experience = defineCollection({
     company: z.string(),
     position: z.string(),
     startDate: z.string(),
-    endDate: z.string(),
+    endDate: z.string().optional(),
     location: z.string().optional(),
-    type: z.enum(['full-time', 'part-time', 'internship', 'freelance']).default('full-time'),
+    type: z
+      .enum(['Full-time', 'Part-time', 'Freelance', 'Internship', 'Contract', 'Academic'])
+      .default('Full-time'),
     order: z.number().default(99),
   }),
 });
@@ -51,7 +52,6 @@ const education = defineCollection({
     field: z.string().optional(),
     startDate: z.string(),
     endDate: z.string(),
-    gpa: z.string().optional(),
     order: z.number().default(99),
   }),
 });
@@ -63,7 +63,8 @@ const certificates = defineCollection({
     title: z.string(),
     issuer: z.string(),
     issueDate: z.string(),
-    expiryDate: z.string().optional(),
+    description: z.string().optional(),
+    pdfFile: z.string().optional(),
     credentialUrl: z.string().url().optional(),
     cover: z.string().optional(),
     order: z.number().default(99),

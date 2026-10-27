@@ -25,6 +25,7 @@ technology:
   - JavaScript
   - Lenis
   - CSS
+  - Vercel
 cover: /images/projects/adam-s-co-lawyers/cover.png
 liveUrl: https://adams-co-lawyers.vercel.app/
 githubUrl: https://github.com/Cukull/adams-co-lawyers.git
@@ -35,8 +36,38 @@ order: 2
 
 ADAM'S CO LAWYERS adalah website company profile untuk firma hukum yang menangani kebutuhan hukum individu, keluarga, perusahaan, dan institusi. Situs ini menyatukan 13 bidang praktik, profil tim advokat, berita hukum, video, FAQ, dan jalur konsultasi WhatsApp dalam satu pengalaman yang formal namun tetap mudah dipahami.
 
-## Isi modul
+## Masalah
 
-- Firma hukum perlu tampil kredibel di dunia digital tanpa membuat calon klien merasa berhadapan dengan halaman yang rumit. Dengan 13 bidang layanan—mulai dari pidana, pertanahan, keimigrasian, hukum keluarga, kepailitan, hingga sengketa pemilu—informasi harus terstruktur agar pengunjung bisa menemukan masalah yang relevan tanpa membaca semuanya.
+Firma hukum perlu tampil kredibel di dunia digital tanpa membuat calon klien merasa berhadapan dengan halaman yang rumit. Dengan 13 bidang layanan—mulai dari pidana, pertanahan, keimigrasian, hukum keluarga, kepailitan, hingga sengketa pemilu—informasi harus terstruktur agar pengunjung bisa menemukan masalah yang relevan tanpa membaca semuanya.
 
-  Tantangan lainnya adalah membangun kepercayaan. Calon klien ingin melihat siapa yang menangani perkara, pengalaman tim, dan aktivitas firma sebelum mengambil keputusan untuk berkonsultasi.
+Tantangan lainnya adalah membangun kepercayaan. Calon klien ingin melihat siapa yang menangani perkara, pengalaman tim, dan aktivitas firma sebelum mengambil keputusan untuk berkonsultasi.
+
+## Pendekatan
+
+### Arsitektur layanan yang mudah dipindai
+
+Halaman utama menampilkan enam bidang layanan paling relevan, sementara seluruh 13 bidang tersedia melalui halaman layanan dan dropdown navigasi. Setiap layanan memiliki penjelasan singkat dan tautan ke halaman detail agar calon klien dapat memahami cakupan pendampingan sebelum menghubungi firma.
+
+### Kredibilitas melalui tim dan konten
+
+Website menampilkan profil advokat beserta gelar dan perannya, berita serta insight hukum, dan galeri video pembahasan perkara. Kombinasi ini memberi konteks bahwa firma tidak hanya menawarkan jasa, tetapi juga aktif membangun pemahaman hukum publik.
+
+### Jalur konsultasi yang konsisten
+
+CTA WhatsApp hadir di header, hero, halaman layanan, dan bagian kontak. Pengunjung tidak perlu mencari-cari cara menghubungi firma; setiap titik penting dalam perjalanan mereka diarahkan ke langkah berikutnya yang jelas.
+
+### Bahasa visual yang tenang dan berwibawa
+
+Palet navy dipadukan dengan aksen emas, tipografi Plus Jakarta Sans, dan aksen serif miring pada headline utama. Ruang putih yang lega dan hierarki teks yang tegas membuat halaman terasa profesional, formal, dan tidak berlebihan.
+
+## Teknologi
+
+Website dibangun dengan Astro untuk menghasilkan halaman statis yang cepat dan ramah SEO. Interaksi dan smooth scrolling menggunakan JavaScript serta Lenis, sementara tata letaknya dibangun dengan CSS. Situs dideploy melalui Vercel.
+
+## Hasil
+
+Hasilnya adalah company profile yang membantu calon klien memahami layanan, menilai kredibilitas tim, dan langsung berkonsultasi melalui WhatsApp. Struktur kontennya juga memberi fondasi yang konsisten untuk publikasi berita, video, dan pembaruan layanan di masa depan.
+
+## Refleksi
+
+Website firma hukum harus menyeimbangkan dua hal: otoritas dan kejelasan. Desain yang terlalu ramai bisa mengurangi kesan profesional, tetapi terlalu minimal juga bisa membuat layanan sulit dipahami. Di sini, struktur konten dan bahasa visual bekerja bersama untuk membuat informasi yang kompleks terasa lebih mudah didekati.

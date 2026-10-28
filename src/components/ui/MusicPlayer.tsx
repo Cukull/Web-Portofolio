@@ -12,6 +12,17 @@
  */
 import React from 'react';
 import { siteConfig } from '../../config/site';
+import Lanyard from './Lanyard';
+
+function makeStrapSvg(shortName: string) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="120" viewBox="0 0 600 120">
+    <rect width="600" height="120" fill="#141414"/>
+    <rect y="10" width="600" height="8" fill="#FDBA12"/>
+    <rect y="102" width="600" height="8" fill="#FDBA12"/>
+    <text x="300" y="72" text-anchor="middle" font-family="monospace" font-size="34" font-weight="800" fill="#FDFDFB" letter-spacing="6">${shortName} ★ </text>
+  </svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
 
 function PlayIcon() {
   return (
@@ -57,20 +68,46 @@ function CassetteIcon() {
 }
 
 export default function MusicPlayer() {
-  const { music } = siteConfig;
+  const { music, shortName } = siteConfig;
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = React.useState(false);
+  const [needsUnlock, setNeedsUnlock] = React.useState(false);
+  const [isReady, setIsReady] = React.useState(false);
+  const [isClosing, setIsClosing] = React.useState(false);
+  const pressStartRef = React.useRef<number>(0);
+
+  const strapImage = React.useMemo(() => makeStrapSvg(shortName), [shortName]);
+
+  const dismissPrompt = React.useCallback((delay = 0) => {
+    window.setTimeout(() => {
+      setIsClosing(true);
+      window.setTimeout(() => {
+        setNeedsUnlock(false);
+        setIsClosing(false);
+      }, 480);
+    }, delay);
+  }, []);
+
+  const startAudio = React.useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.volume = music.volume;
+    if (audio.paused) {
+      void audio.play().catch(() => {});
+    }
+  }, [music.volume]);
 
   const toggle = React.useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     if (audio.paused) {
+      dismissPrompt();
       void audio.play().catch(() => setPlaying(false));
     } else {
       audio.pause();
     }
-  }, []);
+  }, [dismissPrompt]);
 
   React.useEffect(() => {
     const audio = audioRef.current;
@@ -79,17 +116,23 @@ export default function MusicPlayer() {
     audio.volume = music.volume;
 
     let cancelled = false;
-    let autoplayTimer: number | undefined;
-    let lastScrollAttempt = 0;
+    let readyTimer: number | undefined;
 
     const tryPlay = () => {
       if (cancelled || !audio.paused) return;
-      // Browser bisa memblokir autoplay bersuara. Kalau ditolak, pemutaran
-      // akan dicoba lagi pada interaksi pertama pengunjung.
-      void audio.play().catch(() => {});
+      audio
+        .play()
+        .then(() => {
+          if (!cancelled) setNeedsUnlock(false);
+        })
+        .catch(() => {
+          // Mount Lanyard lebih awal di balik layar loading agar kompilasi WebGL & tekstur
+          // selesai sebelum tirai terangkat, lalu picu animasi ayunan saat tirai naik.
+          if (!cancelled && audio.paused) setNeedsUnlock(true);
+        });
     };
 
-    const interactionEvents = ['pointerdown', 'touchstart', 'keydown', 'scroll'] as const;
+    const interactionEvents = ['click', 'pointerdown', 'keydown'] as const;
 
     function removeUnlock() {
       interactionEvents.forEach((eventName) => {
@@ -98,33 +141,30 @@ export default function MusicPlayer() {
     }
 
     function unlock(event: Event) {
-      // Klik pada widget sendiri diserahkan ke tombol play/pause supaya tidak
-      // terjadi play lalu langsung pause pada klik pertama.
       if (event.target instanceof Element && event.target.closest('.music')) {
         removeUnlock();
+        dismissPrompt();
         return;
       }
-
-      // Scroll belum tentu dihitung sebagai user activation oleh browser.
-      // Jangan lepas listener lain sebelum play benar-benar berhasil, dan
-      // jangan memanggil play() puluhan kali selama pengunjung menggulir.
-      if (event.type === 'scroll') {
-        const now = Date.now();
-        if (now - lastScrollAttempt < 800) return;
-        lastScrollAttempt = now;
-      } else {
-        removeUnlock();
+      void audio.play().catch(() => {});
+      if (event.type === 'keydown') {
+        dismissPrompt();
       }
-      tryPlay();
     }
 
-    const onPlay = () => removeUnlock();
+    const onPlay = () => {
+      removeUnlock();
+    };
     audio.addEventListener('play', onPlay);
 
     if (music.autoplay) {
-      // Coba langsung, lalu sekali lagi setelah layar pembuka selesai.
       tryPlay();
-      autoplayTimer = window.setTimeout(tryPlay, 1800);
+      readyTimer = window.setTimeout(() => {
+        if (!cancelled) {
+          setIsReady(true);
+          tryPlay();
+        }
+      }, 1100);
 
       interactionEvents.forEach((eventName) => {
         window.addEventListener(eventName, unlock, { passive: true });
@@ -133,19 +173,55 @@ export default function MusicPlayer() {
 
     return () => {
       cancelled = true;
-      if (autoplayTimer) window.clearTimeout(autoplayTimer);
+      if (readyTimer) window.clearTimeout(readyTimer);
       removeUnlock();
       audio.removeEventListener('play', onPlay);
     };
-  }, [music.autoplay, music.volume]);
+  }, [music.autoplay, music.volume, dismissPrompt]);
 
   if (!music.src) return null;
 
   return (
-    <aside
-      className={`music${playing ? ' is-playing' : ''}`}
-      aria-label="Pemutar musik"
-    >
+    <>
+      {needsUnlock && (
+        <div
+          className={`music-prompt${isReady ? ' is-ready' : ''}${isClosing ? ' is-closing' : ''}`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Selamat datang — klik layar atau tarik lanyard untuk memutar musik"
+          onPointerDown={() => {
+            pressStartRef.current = performance.now();
+            startAudio();
+          }}
+          onPointerUp={() => {
+            const elapsed = performance.now() - pressStartRef.current;
+            dismissPrompt(elapsed < 280 ? 220 : 650);
+          }}
+        >
+          <div className="music-prompt__lanyard">
+            <Lanyard
+              frontImage="/card-front.png"
+              backImage="/card-back.png"
+              strapImage={strapImage}
+              finish="matte"
+              metal="graphite"
+              size={0.62}
+              strapLength={0.48}
+              intro={isReady}
+            />
+          </div>
+
+          <div className="music-prompt__pill" aria-hidden="true">
+            <span className="music-prompt__dot" />
+            <span>Tarik kartu atau klik layar untuk masuk</span>
+          </div>
+        </div>
+      )}
+
+      <aside
+        className={`music${playing ? ' is-playing' : ''}`}
+        aria-label="Pemutar musik"
+      >
       <audio
         ref={audioRef}
         src={music.src}
@@ -182,5 +258,6 @@ export default function MusicPlayer() {
         {playing ? <PauseIcon /> : <PlayIcon />}
       </button>
     </aside>
+    </>
   );
 }
